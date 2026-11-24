@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MCT Study App — Prof. Pignotti</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --background: #f8fafc;
+      --content: #f1f5f9;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --card-border: #e2e8f0;
+      --foreground: #0f172a;
+      --muted-foreground: #475569;
+      --primary: #2563eb;
+      --primary-foreground: #ffffff;
+      --secondary: #e2e8f0;
+      --secondary-foreground: #1e293b;
+      --link: #2563eb;
+      --success: #16a34a;
+      --warning: #d97706;
+      --error: #dc2626;
+    }
+    html.dark {
+      --background: #0b1120;
+      --content: #111827;
+      --card: #162033;
+      --border: #26334a;
+      --card-border: #26334a;
+      --foreground: #f1f5f9;
+      --muted-foreground: #94a3b8;
+      --primary: #3b82f6;
+      --primary-foreground: #ffffff;
+      --secondary: #1e293b;
+      --secondary-foreground: #e2e8f0;
+      --link: #60a5fa;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --error: #ef4444;
+    }
+
+    .math-block {
+      display: block;
+      margin: 0.65rem 0;
+      padding: 0.6rem 0.9rem;
+      border-radius: 0.5rem;
+      background: color-mix(in srgb, var(--foreground) 4%, transparent);
+      border: 1px solid var(--card-border);
+      font-family: "Cambria Math", "STIX Two Math", Georgia, "Times New Roman", serif;
+      font-size: 1.02rem;
+      line-height: 1.7;
+      overflow-x: auto;
+    }
+    .m {
+      font-family: "Cambria Math", "STIX Two Math", Georgia, "Times New Roman", serif;
+      font-size: 1.02em;
+    }
+    .frac {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      vertical-align: middle;
+      margin: 0 0.15em;
+      font-size: 0.88em;
+      line-height: 1.15;
+    }
+    .frac > span:first-child {
+      border-bottom: 1px solid currentColor;
+      padding: 0 0.22em 0.06em;
+    }
+    .frac > span:last-child {
+      padding: 0.08em 0.22em 0;
+    }
+    .int-sym {
+      display: inline-flex;
+      align-items: center;
+      vertical-align: middle;
+      margin-right: 0.15em;
+    }
+    .int-sym .glyph {
+      font-size: 1.55em;
+      line-height: 1;
+      margin-right: 0.05em;
+    }
+    .int-sym .lims {
+      display: inline-flex;
+      flex-direction: column;
+      justify-content: space-between;
+      font-size: 0.68em;
+      line-height: 1.05;
+      height: 1.85em;
+    }
+    .cases {
+      display: inline-flex;
+      align-items: stretch;
+      vertical-align: middle;
+      margin: 0.15em 0.2em;
+    }
+    .cases .brace {
+      border-left: 2px solid currentColor;
+      border-top: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      border-radius: 6px 0 0 6px;
+      width: 6px;
+      margin-right: 0.45em;
+    }
+    .cases .rows {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      text-align: left;
+    }
+    .mat {
+      display: inline-flex;
+      align-items: stretch;
+      vertical-align: middle;
+      margin: 0 0.15em;
+      padding: 0.1em 0.35em;
+      border-left: 1.5px solid currentColor;
+      border-right: 1.5px solid currentColor;
+      border-radius: 5px;
+    }
+    .mat-grid {
+      display: grid;
+      grid-template-columns: auto auto;
+      column-gap: 0.7em;
+      row-gap: 0.15em;
+      text-align: center;
+    }
+    .mat-col {
+      display: grid;
+      grid-template-columns: auto;
+      row-gap: 0.15em;
+      text-align: center;
+    }
+    .proof-list {
+      list-style: decimal;
+      padding-left: 1.35rem;
+      margin-top: 0.35rem;
+    }
+    .proof-list li {
+      margin-bottom: 0.45rem;
+    }
+    .bullet-list {
+      list-style: disc;
+      padding-left: 1.35rem;
+      margin-top: 0.35rem;
+    }
+    .bullet-list li {
+      margin-bottom: 0.35rem;
+    }
+    table.sign-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.5rem 0;
+      font-size: 0.92rem;
+    }
+    table.sign-table th, table.sign-table td {
+      border: 1px solid var(--card-border);
+      padding: 0.45rem 0.65rem;
+      text-align: left;
+    }
+    table.sign-table th {
+      background: color-mix(in srgb, var(--foreground) 6%, transparent);
+    }
+  </style>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased m-0 p-0">
+  <div class="max-w-5xl mx-auto px-4 py-5 space-y-4">
+
+    <!-- Header -->
+    <header class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <h1 class="text-lg font-semibold tracking-tight">MCT Flashcards — Prof. Pignotti</h1>
+        <p class="text-xs text-[var(--muted-foreground)] mt-0.5">
+          Optimal Control · Topics 1–4 (with proofs), Topics 5–8 (statements), and Homeworks separated by file
+        </p>
+      </div>
+      <div class="flex items-center gap-2 flex-wrap">
+        <div class="inline-flex rounded-lg border border-[var(--border)] overflow-hidden text-xs">
+          <button id="modeCardBtn" class="px-3 py-1.5 font-medium transition cursor-pointer">Flashcards</button>
+          <button id="modeListBtn" class="px-3 py-1.5 font-medium transition cursor-pointer">List View</button>
+        </div>
+        <button id="shuffleBtn" class="px-3 py-1.5 text-xs rounded-lg border border-[var(--border)] hover:opacity-85 transition cursor-pointer">
+          Shuffle
+        </button>
+        <button id="missedToggleBtn" class="px-3 py-1.5 text-xs rounded-lg border border-[var(--border)] hover:opacity-85 transition cursor-pointer">
+          Needs Review Only
+        </button>
+        <button id="themeToggleBtn" class="px-2.5 py-1.5 text-xs rounded-lg border border-[var(--border)] hover:opacity-85 transition cursor-pointer" title="Toggle light/dark mode">Theme</button>
+        <button id="resetProgressBtn" class="px-2.5 py-1.5 text-xs rounded-lg border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition cursor-pointer">
+          Reset Progress
+        </button>
+      </div>
+    </header>
+
+    <!-- Deck / File Selector -->
+    <section class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-medium uppercase tracking-wider text-[var(--muted-foreground)]">Select Decks / Files (Multi-Select)</span>
+          <button id="selectAllDecksBtn" class="px-2 py-0.5 text-xs rounded border border-[var(--border)] hover:opacity-80 transition cursor-pointer">All</button>
+          <button id="clearDecksBtn" class="px-2 py-0.5 text-xs rounded border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition cursor-pointer">Clear</button>
+        </div>
+        <span id="masterySummary" class="text-xs text-[var(--muted-foreground)] font-mono"></span>
+      </div>
+      <div id="deckButtons" class="flex flex-wrap gap-2"></div>
+      <!-- Progress Bar -->
+      <div class="mt-3 h-1.5 w-full rounded-full bg-[var(--border)] overflow-hidden">
+        <div id="progressBar" class="h-full bg-[var(--success)] transition-all duration-300" style="width: 0%"></div>
+      </div>
+    </section>
+
+    <!-- Flashcard View -->
+    <main id="cardView" class="space-y-3">
+      <div id="emptyState" class="hidden bg-[var(--card)] border border-[var(--border)] rounded-xl p-8 text-center">
+        <p class="text-sm font-medium">No cards match the current filter.</p>
+        <p class="text-xs text-[var(--muted-foreground)] mt-1">Turn off "Needs Review Only" or choose another deck.</p>
+      </div>
+
+      <div id="cardContainer" class="bg-[var(--card)] border border-[var(--border)] rounded-xl overflow-hidden shadow-sm">
+        <!-- Card Meta Bar -->
+        <div class="px-5 py-3 border-b border-[var(--card-border)] flex flex-wrap items-center justify-between gap-2 text-xs">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span id="cardDeckBadge" class="px-2 py-0.5 rounded-md font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]"></span>
+            <span id="cardTagBadge" class="px-2 py-0.5 rounded-md border border-[var(--border)] text-[var(--muted-foreground)]"></span>
+            <span id="cardDateBadge" class="px-2 py-0.5 rounded-md border border-[var(--border)] font-mono text-[var(--muted-foreground)]"></span>
+            <span id="cardStatusBadge" class="hidden px-2 py-0.5 rounded-md font-medium"></span>
+          </div>
+          <span id="cardCounter" class="font-mono text-[var(--muted-foreground)]"></span>
+        </div>
+
+        <!-- Question Section -->
+        <div class="p-5 sm:p-6">
+          <div class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)] mb-2">Question</div>
+          <h2 id="cardTitle" class="text-base font-semibold mb-2"></h2>
+          <div id="cardQuestion" class="text-sm leading-relaxed space-y-2"></div>
+
+          <!-- Reveal Button -->
+          <div class="mt-5 flex items-center gap-3 flex-wrap">
+            <button id="toggleAnswerBtn" class="px-4 py-2 text-xs font-semibold rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90 transition cursor-pointer">
+              Show Answer
+            </button>
+            <span class="text-xs text-[var(--muted-foreground)]">Shortcuts: <kbd class="px-1.5 py-0.5 rounded border border-[var(--border)] font-mono">Space</kbd> toggle · <kbd class="px-1.5 py-0.5 rounded border border-[var(--border)] font-mono">←</kbd> <kbd class="px-1.5 py-0.5 rounded border border-[var(--border)] font-mono">→</kbd> navigate</span>
+          </div>
+        </div>
+
+        <!-- Answer Section -->
+        <div id="answerSection" class="hidden border-t border-[var(--card-border)] bg-[var(--content)] p-5 sm:p-6">
+          <div class="flex items-center justify-between gap-2 mb-3">
+            <span class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">Answer</span>
+            <div class="flex items-center gap-2">
+              <button id="markReviewBtn" class="px-3 py-1 text-xs font-medium rounded-lg border border-[var(--warning)] text-[var(--warning)] hover:opacity-85 transition cursor-pointer">
+                Needs Review
+              </button>
+              <button id="markMasteredBtn" class="px-3 py-1 text-xs font-medium rounded-lg border border-[var(--success)] text-[var(--success)] hover:opacity-85 transition cursor-pointer">
+                Got It ✓
+              </button>
+            </div>
+          </div>
+          <div id="cardAnswer" class="text-sm leading-relaxed space-y-2"></div>
+        </div>
+      </div>
+
+      <!-- Navigation Bar -->
+      <div id="navBar" class="flex items-center justify-between gap-3">
+        <button id="prevBtn" class="px-4 py-2 text-xs font-medium rounded-lg bg-[var(--card)] border border-[var(--border)] hover:opacity-85 transition cursor-pointer">
+          ← Previous
+        </button>
+        <div id="dotNav" class="flex items-center gap-1.5 flex-wrap justify-center"></div>
+        <button id="nextBtn" class="px-4 py-2 text-xs font-medium rounded-lg bg-[var(--card)] border border-[var(--border)] hover:opacity-85 transition cursor-pointer">
+          Next →
+        </button>
+      </div>
+    </main>
+
+    <!-- List View -->
+    <section id="listView" class="hidden space-y-3"></section>
+
+    <footer class="pt-2 pb-4 text-center text-xs text-[var(--muted-foreground)]">
+      © 2026 Thomas Pugh · All Rights Reserved · No reproduction or derivative works permitted.
+    </footer>
+  </div>
+
+  <script>
+    // Helper builders for clean native HTML math (zero external CDN needed)
+    const fr = (a, b) => `<span class="frac"><span>${a}</span><span>${b}</span></span>`;
+    const intg = (lo, hi) => `<span class="int-sym"><span class="glyph">∫</span><span class="lims"><span>${hi}</span><span>${lo}</span></span></span>`;
+    const cases = (rows) => `<span class="cases"><span class="brace"></span><span class="rows">${rows.map(r => `<span>${r}</span>`).join('')}</span></span>`;
+    const mat2 = (a, b, c, d) => `<span class="mat"><span class="mat-grid"><span>${a}</span><span>${b}</span><span>${c}</span><span>${d}</span></span></span>`;
+    const vec2 = (a, b) => `<span class="mat"><span class="mat-col"><span>${a}</span><span>${b}</span></span></span>`;
+
+    const DECKS = [
+      { id: "theory-proofs", label: "Theory: Topics 1–4 (With Proofs)" },
+      { id: "theory-noproof", label: "Theory: Topics 5–8 (No Proof)" },
+      { id: "hw-10-16", label: "HW 1: 2026-10-16" },
+      { id: "hw-10-23", label: "HW 2: 2026-10-23" },
+      { id: "hw-11-06", label: "HW 3: 2026-11-06" },
+      { id: "hw-11-14", label: "HW 4: 2026-11-14" },
+    ];
+
+    const CARDS = [
+      // ==================== THEORY: TOPICS 1-4 (WITH PROOFS) ====================
+      {
+        id: "t1-1",
+        deck: "theory-proofs",
+        tag: "Topic 1 · Setup",
+        title: "Basic Scalar Optimal Control Problem & Piecewise Continuity",
+        q: `<p>State the basic scalar optimal control problem (dynamics, objective, regularity assumptions) and define what it means for a control <span class="m"><i>u</i> : [<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>] → ℝ</span> to be <strong>piecewise continuous</strong> and <strong>optimal</strong>.</p>`,
+        a: `
+          <p><strong>Problem:</strong> Maximize (or minimize)</p>
+          <div class="math-block"><i>J</i>(<i>u</i>) = ${intg("<i>t</i><sub>0</sub>", "<i>t</i><sub>1</sub>")} <i>f</i>(<i>t</i>, <i>x</i><sup><i>u</i></sup>(<i>t</i>), <i>u</i>(<i>t</i>)) <i>dt</i> &nbsp; subject to &nbsp; ${cases(["<i>x</i>'(<i>t</i>) = <i>g</i>(<i>t</i>, <i>x</i>(<i>t</i>), <i>u</i>(<i>t</i>)), &nbsp; <i>t</i> ∈ [<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>]", "<i>x</i>(<i>t</i><sub>0</sub>) = <i>x</i><sub>0</sub> ∈ ℝ"])}</div>
+          <p>where <span class="m"><i>f</i>, <i>g</i> : [<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>] × ℝ × ℝ → ℝ</span> are <span class="m"><i>C</i><sup>1</sup></span>, and <span class="m"><i>u</i></span> is piecewise continuous (yielding a unique state <span class="m"><i>x</i><sup><i>u</i></sup></span>).</p>
+          <ul class="bullet-list">
+            <li><strong>Piecewise continuous:</strong> continuous on <span class="m">[<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>]</span> except at finitely many points <span class="m">ξ<sub>1</sub>, …, ξ<sub><i>k</i></sub></span>, where both one-sided limits <span class="m">lim<sub><i>t</i>→ξ<sub><i>i</i></sub><sup>±</sup></sub> <i>u</i>(<i>t</i>)</span> exist and are finite.</li>
+            <li><strong>Optimal pair (<i>x</i>*, <i>u</i>*):</strong> <span class="m"><i>J</i>(<i>u</i>*) ≥ <i>J</i>(<i>u</i>)</span> for all admissible <span class="m"><i>u</i></span> (for max; reverse to <span class="m">≤</span> for min), with <span class="m"><i>x</i>* = <i>x</i><sup><i>u</i>*</sup></span>.</li>
+          </ul>
+        `
+      },
+      {
+        id: "t1-2",
+        deck: "theory-proofs",
+        tag: "Topic 1 · Proof (Lemma)",
+        title: "Uniform Convergence of Perturbed States (MVT + Gronwall)",
+        q: `<p>For an unconstrained optimal control <span class="m"><i>u</i>*</span> and a bounded piecewise-continuous variation <span class="m"><i>h</i></span>, define <span class="m"><i>u</i><sub>ε</sub> = <i>u</i>* + ε<i>h</i></span> and <span class="m"><i>x</i><sub>ε</sub> = <i>x</i><sup><i>u</i><sub>ε</sub></sup></span>. State <strong>Gronwall's Lemma</strong> and prove that <span class="m"><i>x</i><sub>ε</sub> → <i>x</i>*</span> <strong>uniformly</strong> on <span class="m">[<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>]</span> as <span class="m">ε → 0</span>.</p>`,
+        a: `
+          <p><strong>Gronwall's Lemma:</strong> If <span class="m"><i>y</i> : [<i>t</i><sub>0</sub>, <i>T</i>) → ℝ</span> is continuous and <span class="m"><i>y</i>(<i>t</i>) ≤ α + β ${intg("<i>t</i><sub>0</sub>", "<i>t</i>")} <i>y</i>(<i>s</i>) <i>ds</i></span> with <span class="m">β ≥ 0</span>, then <span class="m"><i>y</i>(<i>t</i>) ≤ α<i>e</i><sup>β(<i>t</i>−<i>t</i><sub>0</sub>)</sup></span>.</p>
+          <p class="mt-2"><strong>Proof:</strong> Let <span class="m">|<i>h</i>(<i>t</i>)| ≤ <i>M</i></span>, so <span class="m">|<i>u</i><sub>ε</sub> − <i>u</i>*| ≤ <i>M</i>|ε|</span>. Writing the ODE in integral form and applying the Mean Value Theorem to <span class="m"><i>g</i> ∈ <i>C</i><sup>1</sup></span>:</p>
+          <div class="math-block"><i>x</i><sub>ε</sub>(<i>t</i>) − <i>x</i>*(<i>t</i>) = ${intg("<i>t</i><sub>0</sub>", "<i>t</i>")} [<i>g</i><sub><i>x</i></sub>(<i>s</i>, <i>x̄</i>, <i>ū</i>)(<i>x</i><sub>ε</sub> − <i>x</i>*) + <i>g</i><sub><i>u</i></sub>(<i>s</i>, <i>x̄</i>, <i>ū</i>)(<i>u</i><sub>ε</sub> − <i>u</i>*)] <i>ds</i>.</div>
+          <p>Since <span class="m"><i>g</i><sub><i>x</i></sub>, <i>g</i><sub><i>u</i></sub></span> are bounded by some <span class="m"><i>C</i> &gt; 0</span> on a compact neighborhood:</p>
+          <div class="math-block">|<i>x</i><sub>ε</sub>(<i>t</i>) − <i>x</i>*(<i>t</i>)| ≤ <i>CM</i>(<i>t</i><sub>1</sub> − <i>t</i><sub>0</sub>)|ε| + <i>C</i> ${intg("<i>t</i><sub>0</sub>", "<i>t</i>")} |<i>x</i><sub>ε</sub>(<i>s</i>) − <i>x</i>*(<i>s</i>)| <i>ds</i>.</div>
+          <p>By Gronwall's Lemma with <span class="m">α = <i>CM</i>(<i>t</i><sub>1</sub> − <i>t</i><sub>0</sub>)|ε|</span> and <span class="m">β = <i>C</i></span>:</p>
+          <div class="math-block">|<i>x</i><sub>ε</sub>(<i>t</i>) − <i>x</i>*(<i>t</i>)| ≤ <i>CM</i>(<i>t</i><sub>1</sub> − <i>t</i><sub>0</sub>)<i>e</i><sup><i>C</i>(<i>t</i><sub>1</sub>−<i>t</i><sub>0</sub>)</sup>|ε| &nbsp; ∀<i>t</i> ∈ [<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>] &nbsp; ⇒ &nbsp; ‖<i>x</i><sub>ε</sub> − <i>x</i>*‖<sub>∞</sub> → 0.</div>
+          <p class="text-xs text-[var(--muted-foreground)]">This uniform convergence justifies differentiating under the integral sign in the first variation.</p>
+        `
+      },
+      {
+        id: "t1-3",
+        deck: "theory-proofs",
+        tag: "Topic 1 · Full Proof",
+        title: "First-Order Necessary Optimality Conditions (Scalar Case)",
+        q: `<p>State and <strong>prove</strong> the first-order necessary optimality conditions for the unconstrained scalar problem <span class="m">max<sub><i>u</i></sub> ${intg("<i>t</i><sub>0</sub>", "<i>t</i><sub>1</sub>")} <i>f</i>(<i>t</i>, <i>x</i>, <i>u</i>) <i>dt</i></span> subject to <span class="m"><i>x</i>' = <i>g</i>(<i>t</i>, <i>x</i>, <i>u</i>)</span>, <span class="m"><i>x</i>(<i>t</i><sub>0</sub>) = <i>x</i><sub>0</sub></span>.</p>`,
+        a: `
+          <p><strong>Theorem:</strong> If <span class="m">(<i>x</i>*, <i>u</i>*)</span> is optimal, there exists a piecewise differentiable costate <span class="m">λ : [<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>] → ℝ</span> such that</p>
+          <div class="math-block"><i>f</i><sub><i>u</i></sub>(<i>t</i>, <i>x</i>*, <i>u</i>*) + λ(<i>t</i>)<i>g</i><sub><i>u</i></sub>(<i>t</i>, <i>x</i>*, <i>u</i>*) = 0, &nbsp;&nbsp; ${cases(["λ'(<i>t</i>) = −<i>f</i><sub><i>x</i></sub>(<i>t</i>, <i>x</i>*, <i>u</i>*) − λ(<i>t</i>)<i>g</i><sub><i>x</i></sub>(<i>t</i>, <i>x</i>*, <i>u</i>*)", "λ(<i>t</i><sub>1</sub>) = 0"])}</div>
+          <p><strong>Proof:</strong></p>
+          <ol class="proof-list">
+            <li>For any bounded piecewise-continuous <span class="m"><i>h</i></span>, set <span class="m"><i>u</i><sub>ε</sub> = <i>u</i>* + ε<i>h</i></span>. Since <span class="m"><i>u</i></span> is unconstrained, <span class="m">ε ↦ <i>J</i>(<i>u</i><sub>ε</sub>)</span> has a local extremum at <span class="m">ε = 0</span>, so <span class="m">d<i>J</i>(<i>u</i><sub>ε</sub>)/dε|<sub>ε=0</sub> = 0</span>.</li>
+            <li>For any piecewise differentiable <span class="m">λ</span>, add the zero identity <span class="m">${intg("<i>t</i><sub>0</sub>", "<i>t</i><sub>1</sub>")} (λ<i>x</i><sub>ε</sub>)' <i>dt</i> − λ(<i>t</i><sub>1</sub>)<i>x</i><sub>ε</sub>(<i>t</i><sub>1</sub>) + λ(<i>t</i><sub>0</sub>)<i>x</i><sub>0</sub> = 0</span> to <span class="m"><i>J</i>(<i>u</i><sub>ε</sub>)</span> and substitute <span class="m"><i>x</i><sub>ε</sub>' = <i>g</i></span>:
+              <div class="math-block"><i>J</i>(<i>u</i><sub>ε</sub>) = ${intg("<i>t</i><sub>0</sub>", "<i>t</i><sub>1</sub>")} [<i>f</i>(<i>t</i>, <i>x</i><sub>ε</sub>, <i>u</i><sub>ε</sub>) + λ'<i>x</i><sub>ε</sub> + λ<i>g</i>(<i>t</i>, <i>x</i><sub>ε</sub>, <i>u</i><sub>ε</sub>)] <i>dt</i> − λ(<i>t</i><sub>1</sub>)<i>x</i><sub>ε</sub>(<i>t</i><sub>1</sub>) + λ(<i>t</i><sub>0</sub>)<i>x</i><sub>0</sub>.</div>
+            </li>
+            <li>Differentiate w.r.t. <span class="m">ε</span> at <span class="m">ε = 0</span> (using <span class="m">∂<sub>ε</sub><i>u</i><sub>ε</sub> = <i>h</i></span> and <span class="m">λ(<i>t</i><sub>0</sub>)<i>x</i><sub>0</sub></span> constant):
+              <div class="math-block">0 = ${intg("<i>t</i><sub>0</sub>", "<i>t</i><sub>1</sub>")} [(<i>f</i><sub><i>x</i></sub> + λ' + λ<i>g</i><sub><i>x</i></sub>) ∂<sub>ε</sub><i>x</i><sub>ε</sub>|<sub>0</sub> + (<i>f</i><sub><i>u</i></sub> + λ<i>g</i><sub><i>u</i></sub>)<i>h</i>] <i>dt</i> − λ(<i>t</i><sub>1</sub>) ∂<sub>ε</sub><i>x</i><sub>ε</sub>(<i>t</i><sub>1</sub>)|<sub>0</sub>.</div>
+            </li>
+            <li>Choose <span class="m">λ</span> solving <span class="m">λ' = −<i>f</i><sub><i>x</i></sub> − λ<i>g</i><sub><i>x</i></sub></span> with <span class="m">λ(<i>t</i><sub>1</sub>) = 0</span>. All <span class="m">∂<sub>ε</sub><i>x</i><sub>ε</sub>|<sub>0</sub></span> terms cancel, leaving <span class="m">${intg("<i>t</i><sub>0</sub>", "<i>t</i><sub>1</sub>")} (<i>f</i><sub><i>u</i></sub> + λ<i>g</i><sub><i>u</i></sub>)<i>h</i> <i>dt</i> = 0</span> for all <span class="m"><i>h</i></span>.</li>
+            <li>Take <span class="m"><i>h</i> = <i>f</i><sub><i>u</i></sub> + λ<i>g</i><sub><i>u</i></sub></span> to get <span class="m">${intg("<i>t</i><sub>0</sub>", "<i>t</i><sub>1</sub>")} (<i>f</i><sub><i>u</i></sub> + λ<i>g</i><sub><i>u</i></sub>)<sup>2</sup> <i>dt</i> = 0</span>, hence <span class="m"><i>f</i><sub><i>u</i></sub> + λ<i>g</i><sub><i>u</i></sub> = 0</span> at continuity points (a.e.). ∎</li>
+          </ol>
+        `
+      },
+      {
+        id: "t1-4",
+        deck: "theory-proofs",
+        tag: "Topic 1 · Scheme",
+        title: "Hamiltonian Formulation & 5-Step Reconstruction Scheme",
+        q: `<p>Write the scalar first-order necessary conditions in <strong>Hamiltonian form</strong> and state the <strong>5-step scheme</strong> for solving an unconstrained problem.</p>`,
+        a: `
+          <p>Define <span class="m"><i>H</i>(<i>t</i>, <i>x</i>, <i>u</i>, λ) = <i>f</i>(<i>t</i>, <i>x</i>, <i>u</i>) + λ<i>g</i>(<i>t</i>, <i>x</i>, <i>u</i>)</span>. Then <span class="m"><i>H</i><sub><i>u</i></sub> = <i>f</i><sub><i>u</i></sub> + λ<i>g</i><sub><i>u</i></sub></span>, <span class="m"><i>H</i><sub><i>x</i></sub> = <i>f</i><sub><i>x</i></sub> + λ<i>g</i><sub><i>x</i></sub></span>, <span class="m"><i>H</i><sub>λ</sub> = <i>g</i></span>:</p>
+          <div class="math-block"><i>H</i><sub><i>u</i></sub>(<i>t</i>, <i>x</i>*, <i>u</i>*, λ) = 0, &nbsp;&nbsp; ${cases(["λ' = −<i>H</i><sub><i>x</i></sub>(<i>t</i>, <i>x</i>*, <i>u</i>*, λ)", "λ(<i>t</i><sub>1</sub>) = 0"])} &nbsp;&nbsp; ${cases(["<i>x</i>*' = <i>H</i><sub>λ</sub>(<i>t</i>, <i>x</i>*, <i>u</i>*, λ)", "<i>x</i>*(<i>t</i><sub>0</sub>) = <i>x</i><sub>0</sub>"])}</div>
+          <ol class="proof-list">
+            <li>Write <span class="m"><i>H</i><sub><i>u</i></sub> = 0</span> at <span class="m">(<i>x</i>*, <i>u</i>*)</span>.</li>
+            <li>Solve algebraically for <span class="m"><i>u</i>* = <i>u</i>*(<i>x</i>*, λ)</span>.</li>
+            <li>Substitute <span class="m"><i>u</i>*(<i>x</i>*, λ)</span> into the coupled BVP for <span class="m"><i>x</i>*, λ</span> with <span class="m"><i>x</i>*(<i>t</i><sub>0</sub>)=<i>x</i><sub>0</sub></span> and <span class="m">λ(<i>t</i><sub>1</sub>)=0</span>.</li>
+            <li>Solve the two-point BVP for <span class="m">(<i>x</i>*, λ)</span> (analytically or numerically).</li>
+            <li>Recover <span class="m"><i>u</i>*</span> from <span class="m"><i>u</i>*(<i>x</i>*, λ)</span>.</li>
+          </ol>
+        `
+      },
+      {
+        id: "t2-1",
+        deck: "theory-proofs",
+        tag: "Topic 2 · General Statement",
+        title: "Pontryagin Maximum Principle (General Statement)",
+        q: `<p>State the general <strong>Pontryagin Maximum Principle (PMP)</strong> for maximization, and note how the inequality changes for minimization under <span class="m"><i>H</i> = <i>f</i> + λ<i>g</i></span>.</p>`,
+        a: `
+          <p><strong>Theorem (PMP — Maximization):</strong> Let <span class="m"><i>f</i>, <i>g</i> ∈ <i>C</i><sup>1</sup></span>. If <span class="m">(<i>x</i>*, <i>u</i>*)</span> is an optimal pair (<span class="m"><i>x</i>* = <i>x</i><sup><i>u</i>*</sup></span>), then there exists a piecewise differentiable adjoint <span class="m">λ : [<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>] → ℝ</span> (solving <span class="m">λ' = −<i>H</i><sub><i>x</i></sub></span>, <span class="m">λ(<i>t</i><sub>1</sub>) = 0</span>) such that</p>
+          <div class="math-block"><i>H</i>(<i>t</i>, <i>x</i>*(<i>t</i>), <i>u</i>(<i>t</i>), λ(<i>t</i>)) ≤ <i>H</i>(<i>t</i>, <i>x</i>*(<i>t</i>), <i>u</i>*(<i>t</i>), λ(<i>t</i>))</div>
+          <p>for all admissible controls <span class="m"><i>u</i></span> (pointwise / a.e.), where <span class="m"><i>H</i>(<i>t</i>, <i>x</i>, <i>u</i>, λ) = <i>f</i>(<i>t</i>, <i>x</i>, <i>u</i>) + λ<i>g</i>(<i>t</i>, <i>x</i>, <i>u</i>)</span>.</p>
+          <p class="mt-2"><strong>Minimization version:</strong> Under the same <span class="m"><i>H</i> = <i>f</i> + λ<i>g</i></span>, the inequality reverses: <span class="m"><i>H</i>(<i>t</i>, <i>x</i>*, <i>u</i>*, λ) ≤ <i>H</i>(<i>t</i>, <i>x</i>*, <i>u</i>, λ)</span>.</p>
+        `
+      },
+      {
+        id: "t2-2",
+        deck: "theory-proofs",
+        tag: "Topic 2 · Full Proof",
+        title: "Proof of PMP Under Concavity (Max) / Convexity (Min)",
+        q: `<p>State the exact hypotheses and <strong>prove the Pontryagin Maximum Principle</strong> under concavity assumptions w.r.t. <span class="m"><i>u</i></span> (for maximization), and explain the convexity version for minimization.</p>`,
+        a: `
+          <p><strong>Theorem (Particular case):</strong> Let <span class="m"><i>f</i>, <i>g</i> ∈ <i>C</i><sup>1</sup></span> be <strong>concave w.r.t. <i>u</i></strong>. Let <span class="m">(<i>x</i>*, <i>u</i>*)</span> be optimal and <span class="m">λ</span> piecewise differentiable with <span class="m"><i>H</i><sub><i>u</i></sub>(<i>t</i>, <i>x</i>*, <i>u</i>*, λ) = 0</span> and <strong><span class="m">λ(<i>t</i>) ≥ 0</span></strong>. Then <span class="m"><i>H</i>(<i>t</i>, <i>x</i>*, <i>u</i>, λ) ≤ <i>H</i>(<i>t</i>, <i>x</i>*, <i>u</i>*, λ)</span>.</p>
+          <p class="mt-2"><strong>Proof (Maximization):</strong> For a <span class="m"><i>C</i><sup>1</sup></span> concave function, <span class="m"><i>h</i>(<i>u</i>) ≤ <i>h</i>(<i>u</i>*) + <i>h</i>'(<i>u</i>*)(<i>u</i> − <i>u</i>*)</span>, i.e., <span class="m"><i>h</i>(<i>u</i>*) − <i>h</i>(<i>u</i>) ≥ <i>h</i>'(<i>u</i>*)(<i>u</i>* − <i>u</i>)</span>. Applying this in <span class="m"><i>u</i></span> to <span class="m"><i>f</i></span> and <span class="m"><i>g</i></span>:</p>
+          <div class="math-block"><i>f</i>(…, <i>u</i>*) − <i>f</i>(…, <i>u</i>) ≥ <i>f</i><sub><i>u</i></sub>(…, <i>u</i>*)(<i>u</i>* − <i>u</i>), &nbsp;&nbsp; <i>g</i>(…, <i>u</i>*) − <i>g</i>(…, <i>u</i>) ≥ <i>g</i><sub><i>u</i></sub>(…, <i>u</i>*)(<i>u</i>* − <i>u</i>).</div>
+          <p>Since <strong><span class="m">λ(<i>t</i>) ≥ 0</span></strong>, multiply the second inequality by <span class="m">λ</span> and add:</p>
+          <div class="math-block"><i>H</i>(…, <i>u</i>*) − <i>H</i>(…, <i>u</i>) = [<i>f</i>* − <i>f</i>] + λ[<i>g</i>* − <i>g</i>] ≥ (<i>f</i><sub><i>u</i></sub>* + λ<i>g</i><sub><i>u</i></sub>*)(<i>u</i>* − <i>u</i>) = <i>H</i><sub><i>u</i></sub>*(<i>u</i>* − <i>u</i>) = 0. ∎</div>
+          <p class="mt-2"><strong>Minimization (Convexity):</strong> Assume <span class="m"><i>f</i>, <i>g</i></span> are <strong>convex w.r.t. <i>u</i></strong> and <span class="m">λ(<i>t</i>) ≥ 0</span>. Then <span class="m"><i>f</i>* − <i>f</i> ≤ <i>f</i><sub><i>u</i></sub>*(<i>u</i>* − <i>u</i>)</span> and <span class="m"><i>g</i>* − <i>g</i> ≤ <i>g</i><sub><i>u</i></sub>*(<i>u</i>* − <i>u</i>)</span>, so <span class="m"><i>H</i>* − <i>H</i> ≤ <i>H</i><sub><i>u</i></sub>*(<i>u</i>* − <i>u</i>) = 0</span>, giving <span class="m"><i>H</i>* ≤ <i>H</i></span>.</p>
+        `
+      },
+      {
+        id: "t3-1",
+        deck: "theory-proofs",
+        tag: "Topic 3 · Full Proof",
+        title: "Theorem with Sufficient Conditions for Optimality (Maximization)",
+        q: `<p>State and <strong>prove</strong> the theorem giving <strong>sufficient conditions for global optimality</strong> in the scalar maximization problem.</p>`,
+        a: `
+          <p><strong>Theorem:</strong> Let <span class="m"><i>f</i>, <i>g</i> ∈ <i>C</i><sup>1</sup></span> be <strong>jointly concave in (<i>x</i>, <i>u</i>)</strong>. Let <span class="m">(<i>x</i>*, <i>u</i>*)</span> be admissible and suppose there exists a piecewise differentiable <span class="m">λ</span> satisfying</p>
+          <div class="math-block">${cases(["<i>H</i><sub><i>u</i></sub>(<i>t</i>, <i>x</i>*, <i>u</i>*, λ) = 0", "λ' = −<i>H</i><sub><i>x</i></sub>(<i>t</i>, <i>x</i>*, <i>u</i>*, λ)", "λ(<i>t</i><sub>1</sub>) = 0, &nbsp; λ(<i>t</i>) ≥ 0"])}</div>
+          <p>Then <span class="m"><i>J</i>(<i>u</i>*) ≥ <i>J</i>(<i>u</i>)</span> for every admissible control <span class="m"><i>u</i></span>.</p>
+          <p class="mt-2"><strong>Proof:</strong> For any admissible <span class="m">(<i>x</i>, <i>u</i>)</span>:</p>
+          <ol class="proof-list">
+            <li>By joint concavity of <span class="m"><i>f</i></span> in <span class="m">(<i>x</i>, <i>u</i>)</span>:
+              <div class="math-block"><i>J</i>(<i>u</i>*) − <i>J</i>(<i>u</i>) = ${intg("<i>t</i><sub>0</sub>", "<i>t</i><sub>1</sub>")} (<i>f</i>* − <i>f</i>) <i>dt</i> ≥ ${intg("<i>t</i><sub>0</sub>", "<i>t</i><sub>1</sub>")} [<i>f</i><sub><i>x</i></sub>*(<i>x</i>* − <i>x</i>) + <i>f</i><sub><i>u</i></sub>*(<i>u</i>* − <i>u</i>)] <i>dt</i>.</div>
+            </li>
+            <li>Substitute <span class="m"><i>f</i><sub><i>u</i></sub>* = −λ<i>g</i><sub><i>u</i></sub>*</span> and <span class="m"><i>f</i><sub><i>x</i></sub>* = −λ' − λ<i>g</i><sub><i>x</i></sub>*</span>:
+              <div class="math-block"><i>J</i>(<i>u</i>*) − <i>J</i>(<i>u</i>) ≥ ${intg("<i>t</i><sub>0</sub>", "<i>t</i><sub>1</sub>")} [−λ'(<i>x</i>* − <i>x</i>) − λ(<i>g</i><sub><i>x</i></sub>*(<i>x</i>* − <i>x</i>) + <i>g</i><sub><i>u</i></sub>*(<i>u</i>* − <i>u</i>))] <i>dt</i>.</div>
+            </li>
+            <li>Integrate <span class="m">−λ'(<i>x</i>* − <i>x</i>)</span> by parts; boundary terms vanish since <span class="m">λ(<i>t</i><sub>1</sub>) = 0</span> and <span class="m"><i>x</i>*(<i>t</i><sub>0</sub>) = <i>x</i>(<i>t</i><sub>0</sub>) = <i>x</i><sub>0</sub></span>:
+              <div class="math-block">${intg("<i>t</i><sub>0</sub>", "<i>t</i><sub>1</sub>")} −λ'(<i>x</i>* − <i>x</i>) <i>dt</i> = −[λ(<i>x</i>* − <i>x</i>)]<sub><i>t</i><sub>0</sub></sub><sup><i>t</i><sub>1</sub></sup> + ${intg("<i>t</i><sub>0</sub>", "<i>t</i><sub>1</sub>")} λ(<i>x</i>*' − <i>x</i>') <i>dt</i> = ${intg("<i>t</i><sub>0</sub>", "<i>t</i><sub>1</sub>")} λ(<i>g</i>* − <i>g</i>) <i>dt</i>.</div>
+            </li>
+            <li>Combine:
+              <div class="math-block"><i>J</i>(<i>u</i>*) − <i>J</i>(<i>u</i>) ≥ ${intg("<i>t</i><sub>0</sub>", "<i>t</i><sub>1</sub>")} λ(<i>t</i>)[<i>g</i>* − <i>g</i> − <i>g</i><sub><i>x</i></sub>*(<i>x</i>* − <i>x</i>) − <i>g</i><sub><i>u</i></sub>*(<i>u</i>* − <i>u</i>)] <i>dt</i> ≥ 0,</div>
+              because the bracket is <span class="m">≥ 0</span> by joint concavity of <span class="m"><i>g</i></span> and <span class="m">λ(<i>t</i>) ≥ 0</span>. ∎
+            </li>
+          </ol>
+        `
+      },
+      {
+        id: "t3-2",
+        deck: "theory-proofs",
+        tag: "Topic 3 · Minimization & Comparison",
+        title: "Sufficiency for Minimization vs. PMP Hypotheses",
+        q: `<p>How does the sufficient conditions theorem change for <strong>minimization</strong>, and what is the crucial difference between the convexity/concavity hypotheses in <strong>Topic 2 (PMP)</strong> vs. <strong>Topic 3 (Sufficiency)</strong>?</p>`,
+        a: `
+          <ul class="bullet-list">
+            <li><strong>Minimization version:</strong> Assume <span class="m"><i>f</i>, <i>g</i> ∈ <i>C</i><sup>1</sup></span> are <strong>jointly convex in (<i>x</i>, <i>u</i>)</strong> and <span class="m">λ(<i>t</i>) ≥ 0</span>. Every inequality in the proof reverses, giving <span class="m"><i>J</i>(<i>u</i>*) − <i>J</i>(<i>u</i>) ≤ 0</span>.</li>
+            <li><strong>Topic 2 vs. Topic 3:</strong>
+              <ul class="bullet-list">
+                <li><strong>PMP proof (Topic 2):</strong> only requires concavity/convexity <strong>in <i>u</i> alone</strong>, because <span class="m"><i>x</i>*</span> is held fixed in <span class="m"><i>H</i>(<i>t</i>, <i>x</i>*, <i>u</i>, λ)</span>.</li>
+                <li><strong>Sufficiency (Topic 3):</strong> requires <strong>joint concavity/convexity in (<i>x</i>, <i>u</i>)</strong>, because competing controls <span class="m"><i>u</i></span> generate different state trajectories <span class="m"><i>x</i> ≠ <i>x</i>*</span>.</li>
+              </ul>
+            </li>
+          </ul>
+        `
+      },
+      {
+        id: "t4-1",
+        deck: "theory-proofs",
+        tag: "Topic 4 · Full Proof",
+        title: "Dynamic Programming Principle (Principle of Optimality)",
+        q: `<p>State and <strong>prove</strong> the <strong>Dynamic Programming Principle</strong> for restricting an optimal pair <span class="m">(<i>x</i>*, <i>u</i>*)</span> on <span class="m">[<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>]</span> to a terminal subinterval <span class="m">[<i>t̂</i>, <i>t</i><sub>1</sub>]</span>.</p>`,
+        a: `
+          <p><strong>Theorem:</strong> If <span class="m">(<i>x</i>*, <i>u</i>*)</span> is optimal for <span class="m">(P)</span> on <span class="m">[<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>]</span> and <span class="m"><i>t̂</i> ∈ (<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>)</span>, then <span class="m">(<i>x</i>*|<sub>[<i>t̂</i>, <i>t</i><sub>1</sub>]</sub>, <i>u</i>*|<sub>[<i>t̂</i>, <i>t</i><sub>1</sub>]</sub>)</span> is optimal for the reduced problem <span class="m">(P̂)</span>:</p>
+          <div class="math-block">max<sub><i>u</i></sub> <i>Ĵ</i>(<i>u</i>) = ${intg("<i>t̂</i>", "<i>t</i><sub>1</sub>")} <i>f</i>(<i>t</i>, <i>x</i><sup><i>u</i></sup>, <i>u</i>) <i>dt</i> &nbsp; subject to &nbsp; ${cases(["<i>x</i>' = <i>g</i>(<i>t</i>, <i>x</i>, <i>u</i>)", "<i>x</i>(<i>t̂</i>) = <i>x</i>*(<i>t̂</i>)"])}</div>
+          <p><strong>Proof (by contradiction &amp; splicing):</strong></p>
+          <ol class="proof-list">
+            <li>Suppose the restriction is not optimal for <span class="m">(P̂)</span>. Then there exists an admissible <span class="m"><i>û</i> : [<i>t̂</i>, <i>t</i><sub>1</sub>] → ℝ</span> with <span class="m"><i>Ĵ</i>(<i>û</i>) &gt; <i>Ĵ</i>(<i>u</i>*|<sub>[<i>t̂</i>, <i>t</i><sub>1</sub>]</sub>)</span>.</li>
+            <li>Define the spliced control on <span class="m">[<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>]</span>:
+              <div class="math-block"><i>û</i><sub>1</sub>(<i>t</i>) = ${cases(["<i>u</i>*(<i>t</i>), &nbsp; <i>t</i> ∈ [<i>t</i><sub>0</sub>, <i>t̂</i>)", "<i>û</i>(<i>t</i>), &nbsp;&nbsp;&nbsp; <i>t</i> ∈ [<i>t̂</i>, <i>t</i><sub>1</sub>]"])}</div>
+            </li>
+            <li>Then <span class="m"><i>û</i><sub>1</sub></span> is piecewise continuous (admissible), <span class="m"><i>x</i><sup><i>û</i><sub>1</sub></sup> = <i>x</i>*</span> on <span class="m">[<i>t</i><sub>0</sub>, <i>t̂</i>]</span>, and <span class="m"><i>x</i><sup><i>û</i><sub>1</sub></sup> = <i>x</i><sup><i>û</i></sup></span> on <span class="m">[<i>t̂</i>, <i>t</i><sub>1</sub>]</span>.</li>
+            <li>Compute the difference (the integrals on <span class="m">[<i>t</i><sub>0</sub>, <i>t̂</i>]</span> cancel):
+              <div class="math-block"><i>J</i>(<i>û</i><sub>1</sub>) − <i>J</i>(<i>u</i>*) = <i>Ĵ</i>(<i>û</i>) − <i>Ĵ</i>(<i>u</i>*|<sub>[<i>t̂</i>, <i>t</i><sub>1</sub>]</sub>) &gt; 0,</div>
+              contradicting optimality of <span class="m"><i>u</i>*</span> for <span class="m">(P)</span>. ∎
+            </li>
+          </ol>
+        `
+      },
+      {
+        id: "t4-2",
+        deck: "theory-proofs",
+        tag: "Topic 4 · Full Proof",
+        title: "Uniqueness Passes to the Restricted Problem",
+        q: `<p>State and <strong>prove</strong> the uniqueness theorem for the Dynamic Programming Principle: if <span class="m"><i>u</i>*</span> is the <strong>unique</strong> optimal control for <span class="m">(P)</span>, what can be said about <span class="m"><i>u</i>*|<sub>[<i>t̂</i>, <i>t</i><sub>1</sub>]</sub></span> for <span class="m">(P̂)</span>?</p>`,
+        a: `
+          <p><strong>Theorem:</strong> If <span class="m"><i>u</i>*</span> is the unique optimal control for <span class="m">(P)</span>, then <span class="m"><i>u</i>*|<sub>[<i>t̂</i>, <i>t</i><sub>1</sub>]</sub></span> is the <strong>unique</strong> optimal control for <span class="m">(P̂)</span>.</p>
+          <p class="mt-2"><strong>Proof:</strong> By contradiction, suppose <span class="m">(P̂)</span> admits another optimal control <span class="m"><i>û</i> ≠ <i>u</i>*|<sub>[<i>t̂</i>, <i>t</i><sub>1</sub>]</sub></span>, so <span class="m"><i>Ĵ</i>(<i>û</i>) = <i>Ĵ</i>(<i>u</i>*|<sub>[<i>t̂</i>, <i>t</i><sub>1</sub>]</sub>)</span>. Define the spliced control <span class="m"><i>û</i><sub>1</sub></span> equal to <span class="m"><i>u</i>*</span> on <span class="m">[<i>t</i><sub>0</sub>, <i>t̂</i>)</span> and <span class="m"><i>û</i></span> on <span class="m">[<i>t̂</i>, <i>t</i><sub>1</sub>]</span>. Then <span class="m"><i>û</i><sub>1</sub> ≠ <i>u</i>*</span>, yet</p>
+          <div class="math-block"><i>J</i>(<i>û</i><sub>1</sub>) − <i>J</i>(<i>u</i>*) = <i>Ĵ</i>(<i>û</i>) − <i>Ĵ</i>(<i>u</i>*|<sub>[<i>t̂</i>, <i>t</i><sub>1</sub>]</sub>) = 0 &nbsp; ⇒ &nbsp; <i>J</i>(<i>û</i><sub>1</sub>) = <i>J</i>(<i>u</i>*),</div>
+          <p>contradicting uniqueness of <span class="m"><i>u</i>*</span> for <span class="m">(P)</span>. ∎</p>
+        `
+      },
+      {
+        id: "t4-3",
+        deck: "theory-proofs",
+        tag: "Topic 4 · Key Remark",
+        title: "Why Restriction to [t₀, t̂] Fails",
+        q: `<p>Does the Dynamic Programming Principle hold if we restrict <span class="m">(<i>x</i>*, <i>u</i>*)</span> to the <strong>initial</strong> interval <span class="m">[<i>t</i><sub>0</sub>, <i>t̂</i>]</span> (with <span class="m"><i>x</i>(<i>t̂</i>)</span> free)? Explain why.</p>`,
+        a: `
+          <p><strong>No!</strong> On <span class="m">[<i>t</i><sub>0</sub>, <i>t̂</i>]</span> with free terminal state, the adjoint must satisfy the new transversality condition <strong><span class="m">λ(<i>t̂</i>) = 0</span></strong>, whereas for the full problem on <span class="m">[<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>]</span> we have <span class="m">λ(<i>t</i><sub>1</sub>) = 0</span> and generally <span class="m">λ(<i>t̂</i>) ≠ 0</span>.</p>
+          <p class="mt-2">Intuitively, on <span class="m">[<i>t</i><sub>0</sub>, <i>t̂</i>]</span> the controller no longer cares about setting up a favorable state <span class="m"><i>x</i>(<i>t̂</i>)</span> for the future interval <span class="m">[<i>t̂</i>, <i>t</i><sub>1</sub>]</span>.</p>
+        `
+      },
+
+      // ==================== THEORY: TOPICS 5-8 (NO PROOF) ====================
+      {
+        id: "t5-1",
+        deck: "theory-noproof",
+        tag: "Topic 5 · No Proof",
+        title: "Lipschitz Continuity of the Hamiltonian",
+        q: `<p>State the theorem on <strong>Lipschitz continuity of the Hamiltonian</strong> along an optimal pair <span class="m">(<i>x</i>*, <i>u</i>*)</span>.</p>`,
+        a: `
+          <p><strong>Theorem:</strong> Let <span class="m"><i>H</i>(<i>t</i>, <i>x</i>, <i>u</i>, λ) = <i>f</i>(<i>t</i>, <i>x</i>, <i>u</i>) + λ<i>g</i>(<i>t</i>, <i>x</i>, <i>u</i>)</span> with <span class="m"><i>f</i>, <i>g</i> ∈ <i>C</i><sup>1</sup></span>, <span class="m"><i>u</i>*</span> piecewise continuous taking values in a compact set <span class="m"><i>U</i></span>, and <span class="m"><i>x</i>*, λ</span> continuous and piecewise differentiable with bounded derivatives. If <span class="m">(<i>x</i>*, <i>u</i>*)</span> is optimal with adjoint <span class="m">λ</span> satisfying PMP, then</p>
+          <div class="math-block"><i>H̃</i>(<i>t</i>) := <i>H</i>(<i>t</i>, <i>x</i>*(<i>t</i>), <i>u</i>*(<i>t</i>), λ(<i>t</i>))</div>
+          <p>is <strong>Lipschitz continuous</strong> on <span class="m">[<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>]</span>: <span class="m">∃<i>L</i> &gt; 0</span> such that <span class="m">|<i>H̃</i>(<i>t</i>) − <i>H̃</i>(<i>s</i>)| ≤ <i>L</i>|<i>t</i> − <i>s</i>|</span> for all <span class="m"><i>t</i>, <i>s</i> ∈ [<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>]</span> — even if <span class="m"><i>u</i>*</span> has jumps!</p>
+        `
+      },
+      {
+        id: "t6-1",
+        deck: "theory-noproof",
+        tag: "Topic 6 · No Proof",
+        title: "Autonomous Case: Constancy of the Hamiltonian",
+        q: `<p>What is an <strong>autonomous</strong> optimal control problem, and what theorem holds for <span class="m"><i>H̃</i>(<i>t</i>)</span> along optimal pairs?</p>`,
+        a: `
+          <p>A problem is <strong>autonomous</strong> when <span class="m"><i>f</i> = <i>f</i>(<i>x</i>, <i>u</i>)</span> and <span class="m"><i>g</i> = <i>g</i>(<i>x</i>, <i>u</i>)</span> do not depend explicitly on <span class="m"><i>t</i></span> (so <span class="m"><i>H</i><sub><i>t</i></sub> ≡ 0</span>).</p>
+          <p class="mt-2"><strong>Theorem:</strong> Along any optimal pair <span class="m">(<i>x</i>*, <i>u</i>*)</span> with costate <span class="m">λ</span> (under the regularity and PMP hypotheses of Topic 5), the Hamiltonian is <strong>constant</strong>:</p>
+          <div class="math-block"><i>H̃</i>(<i>t</i>) = <i>H</i>(<i>x</i>*(<i>t</i>), <i>u</i>*(<i>t</i>), λ(<i>t</i>)) = <i>c</i> &nbsp;&nbsp; ∀<i>t</i> ∈ [<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>].</div>
+          <p class="text-xs text-[var(--muted-foreground)]">Intuition: <span class="m">d<i>H̃</i>/d<i>t</i> = <i>H</i><sub><i>x</i></sub><i>x</i>*' + <i>H</i><sub>λ</sub>λ' + <i>H</i><sub><i>u</i></sub><i>u</i>*' + <i>H</i><sub><i>t</i></sub> = <i>H</i><sub><i>x</i></sub><i>H</i><sub>λ</sub> − <i>H</i><sub>λ</sub><i>H</i><sub><i>x</i></sub> + 0 + 0 = 0</span> a.e.</p>
+        `
+      },
+      {
+        id: "t7-1",
+        deck: "theory-noproof",
+        tag: "Topic 7 · No Proof",
+        title: "Problems with Final Payoff & Transversality Condition",
+        q: `<p>How do the optimality conditions change when the objective includes a <span class="m"><i>C</i><sup>1</sup></span> terminal payoff <span class="m">φ(<i>x</i>(<i>t</i><sub>1</sub>))</span>: <span class="m"><i>J</i>(<i>u</i>) = ${intg("<i>t</i><sub>0</sub>", "<i>t</i><sub>1</sub>")} <i>f</i>(<i>t</i>, <i>x</i>, <i>u</i>) <i>dt</i> + φ(<i>x</i>(<i>t</i><sub>1</sub>))</span>?</p>`,
+        a: `
+          <p>The Hamiltonian <span class="m"><i>H</i> = <i>f</i> + λ<i>g</i></span>, stationarity <span class="m"><i>H</i><sub><i>u</i></sub> = 0</span>, state equation <span class="m"><i>x</i>*' = <i>g</i></span>, and adjoint ODE <span class="m">λ' = −<i>H</i><sub><i>x</i></sub></span> stay <strong>identical</strong>.</p>
+          <p class="mt-2">Only the <strong>transversality condition</strong> changes from <span class="m">λ(<i>t</i><sub>1</sub>) = 0</span> to:</p>
+          <div class="math-block">λ(<i>t</i><sub>1</sub>) = φ'(<i>x</i>*(<i>t</i><sub>1</sub>)).</div>
+        `
+      },
+      {
+        id: "t7-2",
+        deck: "theory-noproof",
+        tag: "Topic 7 · Related (No Proof)",
+        title: "Fixed Terminal State x(t₁) = x₁",
+        q: `<p>What happens to the transversality condition on <span class="m">λ(<i>t</i><sub>1</sub>)</span> when <strong>both</strong> state endpoints <span class="m"><i>x</i>(<i>t</i><sub>0</sub>) = <i>x</i><sub>0</sub></span> and <span class="m"><i>x</i>(<i>t</i><sub>1</sub>) = <i>x</i><sub>1</sub></span> are fixed?</p>`,
+        a: `
+          <p>There is <strong>no transversality condition on <span class="m">λ(<i>t</i><sub>1</sub>)</span></strong>.</p>
+          <p class="mt-2">The adjoint still satisfies <span class="m">λ' = −<i>H</i><sub><i>x</i></sub></span>, and its free integration constant <span class="m"><i>c</i></span> is determined instead by enforcing the terminal state constraint <span class="m"><i>x</i>*(<i>t</i><sub>1</sub>) = <i>x</i><sub>1</sub></span>.</p>
+        `
+      },
+      {
+        id: "t8-1",
+        deck: "theory-noproof",
+        tag: "Topic 8 · No Proof",
+        title: "Bounds on the Control: Optimality Sign Conditions",
+        q: `<p>For bounded controls <span class="m"><i>a</i> ≤ <i>u</i>(<i>t</i>) ≤ <i>b</i></span>, state the first-order necessary conditions on <span class="m"><i>H</i><sub><i>u</i></sub> = <i>f</i><sub><i>u</i></sub> + λ<i>g</i><sub><i>u</i></sub></span> for both <strong>maximization</strong> and <strong>minimization</strong>.</p>`,
+        a: `
+          <table class="sign-table">
+            <thead>
+              <tr><th>Control Value</th><th>Maximization (max <i>J</i>)</th><th>Minimization (min <i>J</i>)</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="m"><i>u</i>*(<i>t</i>) = <i>a</i> (lower)</td><td class="m"><i>H</i><sub><i>u</i></sub> ≤ 0</td><td class="m"><i>H</i><sub><i>u</i></sub> ≥ 0</td></tr>
+              <tr><td class="m"><i>a</i> &lt; <i>u</i>*(<i>t</i>) &lt; <i>b</i> (interior)</td><td class="m"><i>H</i><sub><i>u</i></sub> = 0</td><td class="m"><i>H</i><sub><i>u</i></sub> = 0</td></tr>
+              <tr><td class="m"><i>u</i>*(<i>t</i>) = <i>b</i> (upper)</td><td class="m"><i>H</i><sub><i>u</i></sub> ≥ 0</td><td class="m"><i>H</i><sub><i>u</i></sub> ≤ 0</td></tr>
+            </tbody>
+          </table>
+          <p class="mt-2"><strong>Operational rule:</strong></p>
+          <ul class="bullet-list">
+            <li><strong>Max:</strong> <span class="m"><i>H</i><sub><i>u</i></sub> &lt; 0 ⇒ <i>u</i>* = <i>a</i></span>; &nbsp; <span class="m"><i>H</i><sub><i>u</i></sub> &gt; 0 ⇒ <i>u</i>* = <i>b</i></span>.</li>
+            <li><strong>Min:</strong> <span class="m"><i>H</i><sub><i>u</i></sub> &gt; 0 ⇒ <i>u</i>* = <i>a</i></span>; &nbsp; <span class="m"><i>H</i><sub><i>u</i></sub> &lt; 0 ⇒ <i>u</i>* = <i>b</i></span>.</li>
+            <li>When <span class="m"><i>H</i><sub><i>u</i></sub> = 0</span>, <span class="m"><i>u</i>* ∈ [<i>a</i>, <i>b</i>]</span> (may still lie at a boundary).</li>
+          </ul>
+        `
+      },
+      {
+        id: "t8-2",
+        deck: "theory-noproof",
+        tag: "Related · Vector & Normal Cone",
+        title: "General ℝᴺ-Valued Problem & Normal Cone Condition",
+        q: `<p>For the vector maximization problem with <span class="m"><i>x</i> ∈ ℝ<sup><i>N</i></sup></span>, <span class="m"><i>u</i> ∈ <i>K</i> ⊆ <i>L</i><sup>2</sup>(0, <i>T</i>; ℝ<sup><i>m</i></sup>)</span> closed and convex, state the adjoint equation, transversality condition, and normal-cone optimality condition.</p>`,
+        a: `
+          <div class="math-block">${cases(["<i>p</i>'(<i>t</i>) = −∇<sub><i>x</i></sub><i>f</i>(<i>t</i>, <i>x</i>*, <i>u</i>*) − (∇<sub><i>x</i></sub><i>g</i>(<i>t</i>, <i>x</i>*, <i>u</i>*))<sup><i>T</i></sup> <i>p</i>(<i>t</i>)", "<i>p</i>(<i>T</i>) = ∇<sub><i>x</i></sub>φ(<i>x</i>*(<i>T</i>))"])}</div>
+          <div class="math-block">∇<sub><i>u</i></sub><i>f</i>(<i>t</i>, <i>x</i>*, <i>u</i>*) + (∇<sub><i>u</i></sub><i>g</i>(<i>t</i>, <i>x</i>*, <i>u</i>*))<sup><i>T</i></sup> <i>p</i>(<i>t</i>) ∈ <i>N</i><sub><i>K</i></sub>(<i>u</i>*)</div>
+          <p>where <span class="m"><i>N</i><sub><i>K</i></sub>(<i>u</i>*) = {<i>w</i> ∈ <i>H</i> : ⟨<i>v</i> − <i>u</i>*, <i>w</i>⟩ ≤ 0 ∀<i>v</i> ∈ <i>K</i>}</span> is the <strong>normal cone</strong> to <span class="m"><i>K</i></span> at <span class="m"><i>u</i>*</span>.</p>
+        `
+      },
+
+      // ==================== HW 1: 2026-10-16 ====================
+      {
+        id: "hw1-1",
+        deck: "hw-10-16",
+        tag: "HW 2026-10-16 · Ex. 1",
+        title: "Unconstrained Min: ∫₀¹ (x² + u²) dt",
+        q: `<div class="math-block">min<sub><i>u</i></sub> ${intg("0", "1")} (<i>x</i><sup>2</sup> + <i>u</i><sup>2</sup>) <i>dt</i> &nbsp; subject to &nbsp; ${cases(["<i>x</i>' = <i>u</i>", "<i>x</i>(0) = 1"])}</div><p>Find <span class="m">(<i>x</i>*, <i>u</i>*)</span>.</p>`,
+        a: `
+          <ul class="bullet-list">
+            <li><span class="m"><i>H</i> = <i>x</i><sup>2</sup> + <i>u</i><sup>2</sup> + λ<i>u</i></span>, &nbsp; <span class="m"><i>H</i><sub><i>u</i></sub> = 2<i>u</i> + λ = 0 ⇒ <i>u</i>* = −${fr("λ", "2")}</span>.</li>
+            <li><span class="m">λ' = −2<i>x</i></span>, <span class="m">λ(1) = 0</span>. Differentiating <span class="m"><i>x</i>' = −λ/2</span> gives <span class="m"><i>x</i>'' = <i>x</i></span>.</li>
+            <li><span class="m"><i>x</i>*(<i>t</i>) = <i>c</i><sub>1</sub><i>e</i><sup><i>t</i></sup> + <i>c</i><sub>2</sub><i>e</i><sup>−<i>t</i></sup></span>, &nbsp; <span class="m">λ(<i>t</i>) = −2(<i>c</i><sub>1</sub><i>e</i><sup><i>t</i></sup> − <i>c</i><sub>2</sub><i>e</i><sup>−<i>t</i></sup>)</span>.</li>
+            <li>From <span class="m"><i>c</i><sub>1</sub> + <i>c</i><sub>2</sub> = 1</span> and <span class="m">λ(1) = 0 ⇒ <i>c</i><sub>2</sub> = <i>c</i><sub>1</sub><i>e</i><sup>2</sup></span>: <span class="m"><i>c</i><sub>1</sub> = ${fr("1", "1+<i>e</i><sup>2</sup>")}</span>, <span class="m"><i>c</i><sub>2</sub> = ${fr("<i>e</i><sup>2</sup>", "1+<i>e</i><sup>2</sup>")}</span>.</li>
+          </ul>
+          <div class="math-block"><i>x</i>*(<i>t</i>) = ${fr("<i>e</i><sup><i>t</i></sup> + <i>e</i><sup>2−<i>t</i></sup>", "1 + <i>e</i><sup>2</sup>")} = ${fr("cosh(1 − <i>t</i>)", "cosh 1")}, &nbsp;&nbsp; <i>u</i>*(<i>t</i>) = ${fr("<i>e</i><sup><i>t</i></sup> − <i>e</i><sup>2−<i>t</i></sup>", "1 + <i>e</i><sup>2</sup>")} = −${fr("sinh(1 − <i>t</i>)", "cosh 1")}.</div>
+        `
+      },
+      {
+        id: "hw1-2",
+        deck: "hw-10-16",
+        tag: "HW 2026-10-16 · Ex. 2",
+        title: "Unconstrained Max: ∫₀¹ (xu − u²) dt",
+        q: `<div class="math-block">max<sub><i>u</i></sub> ${intg("0", "1")} (<i>xu</i> − <i>u</i><sup>2</sup>) <i>dt</i> &nbsp; subject to &nbsp; ${cases(["<i>x</i>' = <i>x</i> + <i>u</i>", "<i>x</i>(0) = 1"])}</div><p>Find <span class="m">(<i>x</i>*, <i>u</i>*)</span>.</p>`,
+        a: `
+          <ul class="bullet-list">
+            <li><span class="m"><i>H</i> = <i>xu</i> − <i>u</i><sup>2</sup> + λ(<i>x</i> + <i>u</i>)</span>, &nbsp; <span class="m"><i>H</i><sub><i>u</i></sub> = <i>x</i> − 2<i>u</i> + λ = 0 ⇒ <i>u</i>* = ${fr("<i>x</i> + λ", "2")}</span>.</li>
+            <li>Coupled linear BVP (<span class="m"><i>x</i>(0)=1</span>, <span class="m">λ(1)=0</span>):
+              <div class="math-block">${vec2("<i>x</i>'", "λ'")} = ${mat2("3/2", "1/2", "−1/2", "−3/2")} ${vec2("<i>x</i>", "λ")}, &nbsp; eigenvalues μ = ±√2.</div>
+            </li>
+            <li>Eigenvectors: <span class="m"><i>v</i><sub>+</sub> = (1, 2√2 − 3)<sup><i>T</i></sup></span>, &nbsp; <span class="m"><i>v</i><sub>−</sub> = (1, −2√2 − 3)<sup><i>T</i></sup></span>.</li>
+            <li>General solution: <span class="m"><i>x</i>*(<i>t</i>) = <i>c</i><sub>1</sub><i>e</i><sup>√2 <i>t</i></sup> + <i>c</i><sub>2</sub><i>e</i><sup>−√2 <i>t</i></sup></span>, &nbsp; <span class="m">λ(<i>t</i>) = <i>c</i><sub>1</sub>(2√2 − 3)<i>e</i><sup>√2 <i>t</i></sup> − <i>c</i><sub>2</sub>(2√2 + 3)<i>e</i><sup>−√2 <i>t</i></sup></span>.</li>
+            <li>Constants from <span class="m"><i>c</i><sub>1</sub> + <i>c</i><sub>2</sub> = 1</span> and <span class="m">λ(1) = 0</span>:
+              <div class="math-block"><i>c</i><sub>1</sub> = ${fr("(2√2 + 3)<i>e</i><sup>−√2</sup>", "(2√2 − 3)<i>e</i><sup>√2</sup> + (2√2 + 3)<i>e</i><sup>−√2</sup>")}, &nbsp; <i>c</i><sub>2</sub> = 1 − <i>c</i><sub>1</sub>, &nbsp; <i>u</i>*(<i>t</i>) = <i>c</i><sub>1</sub>(√2 − 1)<i>e</i><sup>√2 <i>t</i></sup> − <i>c</i><sub>2</sub>(√2 + 1)<i>e</i><sup>−√2 <i>t</i></sup>.</div>
+            </li>
+          </ul>
+        `
+      },
+      {
+        id: "hw1-3",
+        deck: "hw-10-16",
+        tag: "HW 2026-10-16 · Ex. 3",
+        title: "Unconstrained Min: ½ ∫₀¹ (3x² + u²) dt",
+        q: `<div class="math-block">min<sub><i>u</i></sub> ${fr("1", "2")} ${intg("0", "1")} (3<i>x</i><sup>2</sup> + <i>u</i><sup>2</sup>) <i>dt</i> &nbsp; subject to &nbsp; ${cases(["<i>x</i>' = <i>x</i> + <i>u</i>", "<i>x</i>(0) = 1"])}</div><p>Find <span class="m">(<i>x</i>*, <i>u</i>*)</span>.</p>`,
+        a: `
+          <ul class="bullet-list">
+            <li><span class="m"><i>H</i> = ${fr("1", "2")}(3<i>x</i><sup>2</sup> + <i>u</i><sup>2</sup>) + λ(<i>x</i> + <i>u</i>)</span>, &nbsp; <span class="m"><i>H</i><sub><i>u</i></sub> = <i>u</i> + λ = 0 ⇒ <i>u</i>* = −λ</span>.</li>
+            <li>System: <span class="m">${vec2("<i>x</i>'", "λ'")} = ${mat2("1", "−1", "−3", "−1")} ${vec2("<i>x</i>", "λ")}</span>, eigenvalues <span class="m">μ = ±2</span>, eigenvectors <span class="m">(1, −1)<sup><i>T</i></sup></span> and <span class="m">(1, 3)<sup><i>T</i></sup></span>.</li>
+            <li>From <span class="m"><i>c</i><sub>1</sub> + <i>c</i><sub>2</sub> = 1</span> and <span class="m">−<i>c</i><sub>1</sub><i>e</i><sup>2</sup> + 3<i>c</i><sub>2</sub><i>e</i><sup>−2</sup> = 0</span>: <span class="m"><i>c</i><sub>1</sub> = ${fr("3", "3 + <i>e</i><sup>4</sup>")}</span>, <span class="m"><i>c</i><sub>2</sub> = ${fr("<i>e</i><sup>4</sup>", "3 + <i>e</i><sup>4</sup>")}</span>.</li>
+          </ul>
+          <div class="math-block"><i>x</i>*(<i>t</i>) = ${fr("3<i>e</i><sup>2<i>t</i></sup> + <i>e</i><sup>4−2<i>t</i></sup>", "3 + <i>e</i><sup>4</sup>")}, &nbsp;&nbsp; <i>u</i>*(<i>t</i>) = −λ(<i>t</i>) = ${fr("3<i>e</i><sup>2<i>t</i></sup> − 3<i>e</i><sup>4−2<i>t</i></sup>", "3 + <i>e</i><sup>4</sup>")}.</div>
+        `
+      },
+      {
+        id: "hw1-4",
+        deck: "hw-10-16",
+        tag: "HW 2026-10-16 · Ex. 4",
+        title: "Unconstrained Min: ∫₀¹ (x² + x + u² + u) dt",
+        q: `<div class="math-block">min<sub><i>u</i></sub> ${intg("0", "1")} (<i>x</i><sup>2</sup> + <i>x</i> + <i>u</i><sup>2</sup> + <i>u</i>) <i>dt</i> &nbsp; subject to &nbsp; ${cases(["<i>x</i>' = <i>u</i>", "<i>x</i>(0) = 0"])}</div><p>Find <span class="m">(<i>x</i>*, <i>u</i>*)</span>. <em>(Hint: solve by substitution.)</em></p>`,
+        a: `
+          <ul class="bullet-list">
+            <li><span class="m"><i>H</i> = <i>x</i><sup>2</sup> + <i>x</i> + <i>u</i><sup>2</sup> + <i>u</i> + λ<i>u</i></span>, &nbsp; <span class="m"><i>H</i><sub><i>u</i></sub> = 2<i>u</i> + 1 + λ = 0 ⇒ <i>u</i>* = −${fr("1 + λ", "2")}</span>.</li>
+            <li><span class="m">λ' = −2<i>x</i> − 1</span>, <span class="m">λ(1) = 0</span>. Substitute into <span class="m"><i>x</i>'' = −λ'/2</span>: <span class="m"><i>x</i>'' − <i>x</i> = ${fr("1", "2")}</span>.</li>
+            <li><span class="m"><i>x</i>*(<i>t</i>) = <i>c</i><sub>1</sub><i>e</i><sup><i>t</i></sup> + <i>c</i><sub>2</sub><i>e</i><sup>−<i>t</i></sup> − ${fr("1", "2")}</span>, &nbsp; <span class="m">λ(<i>t</i>) = −1 − 2(<i>c</i><sub>1</sub><i>e</i><sup><i>t</i></sup> − <i>c</i><sub>2</sub><i>e</i><sup>−<i>t</i></sup>)</span>.</li>
+            <li>From <span class="m"><i>c</i><sub>1</sub> + <i>c</i><sub>2</sub> = ${fr("1", "2")}</span> and <span class="m">2(<i>c</i><sub>1</sub><i>e</i> − <i>c</i><sub>2</sub><i>e</i><sup>−1</sup>) = −1</span>: <span class="m"><i>c</i><sub>1</sub> = ${fr("1 − <i>e</i>", "2(<i>e</i><sup>2</sup> + 1)")}</span>, <span class="m"><i>c</i><sub>2</sub> = ${fr("<i>e</i><sup>2</sup> + <i>e</i>", "2(<i>e</i><sup>2</sup> + 1)")}</span>.</li>
+          </ul>
+          <div class="math-block"><i>x</i>*(<i>t</i>) = ${fr("(1 − <i>e</i>)<i>e</i><sup><i>t</i></sup> + (<i>e</i><sup>2</sup> + <i>e</i>)<i>e</i><sup>−<i>t</i></sup>", "2(<i>e</i><sup>2</sup> + 1)")} − ${fr("1", "2")}, &nbsp;&nbsp; <i>u</i>*(<i>t</i>) = ${fr("(1 − <i>e</i>)<i>e</i><sup><i>t</i></sup> − (<i>e</i><sup>2</sup> + <i>e</i>)<i>e</i><sup>−<i>t</i></sup>", "2(<i>e</i><sup>2</sup> + 1)")}.</div>
+        `
+      },
+      {
+        id: "hw1-5",
+        deck: "hw-10-16",
+        tag: "HW 2026-10-16 · Ex. 5",
+        title: "Unconstrained Max: ∫₁² (x − u²) dt",
+        q: `<div class="math-block">max<sub><i>u</i></sub> ${intg("1", "2")} (<i>x</i> − <i>u</i><sup>2</sup>) <i>dt</i> &nbsp; subject to &nbsp; ${cases(["<i>x</i>' = <i>x</i> + 2<i>u</i>", "<i>x</i>(1) = 0"])}</div><p>Find <span class="m">(<i>x</i>*, <i>u</i>*)</span>.</p>`,
+        a: `
+          <ul class="bullet-list">
+            <li><span class="m"><i>H</i> = <i>x</i> − <i>u</i><sup>2</sup> + λ(<i>x</i> + 2<i>u</i>)</span>, &nbsp; <span class="m"><i>H</i><sub><i>u</i></sub> = −2<i>u</i> + 2λ = 0 ⇒ <i>u</i>* = λ</span>.</li>
+            <li>Decoupled adjoint: <span class="m">λ' = −1 − λ</span>, <span class="m">λ(2) = 0 ⇒ λ(<i>t</i>) = <i>e</i><sup>2−<i>t</i></sup> − 1</span>.</li>
+            <li>State ODE: <span class="m"><i>x</i>' − <i>x</i> = 2<i>e</i><sup>2−<i>t</i></sup> − 2</span>, <span class="m"><i>x</i>(1) = 0</span>. Multiply by <span class="m"><i>e</i><sup>−<i>t</i></sup></span> and integrate from <span class="m">1</span> to <span class="m"><i>t</i></span>:</li>
+          </ul>
+          <div class="math-block"><i>u</i>*(<i>t</i>) = <i>e</i><sup>2−<i>t</i></sup> − 1, &nbsp;&nbsp; <i>x</i>*(<i>t</i>) = (1 − 2<i>e</i><sup>−1</sup>)<i>e</i><sup><i>t</i></sup> − <i>e</i><sup>2−<i>t</i></sup> + 2.</div>
+        `
+      },
+      {
+        id: "hw1-6",
+        deck: "hw-10-16",
+        tag: "HW 2026-10-16 · Ex. 6",
+        title: "Unconstrained Min: ∫₁³ (u² − 2tx) dt",
+        q: `<div class="math-block">min<sub><i>u</i></sub> ${intg("1", "3")} (<i>u</i><sup>2</sup> − 2<i>tx</i>) <i>dt</i> &nbsp; subject to &nbsp; ${cases(["<i>x</i>' = −<i>u</i>", "<i>x</i>(1) = 2"])}</div><p>Find <span class="m">(<i>x</i>*, <i>u</i>*)</span>.</p>`,
+        a: `
+          <ul class="bullet-list">
+            <li><span class="m"><i>H</i> = <i>u</i><sup>2</sup> − 2<i>tx</i> − λ<i>u</i></span>, &nbsp; <span class="m"><i>H</i><sub><i>u</i></sub> = 2<i>u</i> − λ = 0 ⇒ <i>u</i>* = ${fr("λ", "2")}</span>.</li>
+            <li><span class="m">λ' = −<i>H</i><sub><i>x</i></sub> = 2<i>t</i></span>, <span class="m">λ(3) = 0 ⇒ λ(<i>t</i>) = <i>t</i><sup>2</sup> − 9</span>.</li>
+            <li>Integrate <span class="m"><i>x</i>' = −<i>u</i>* = ${fr("9 − <i>t</i><sup>2</sup>", "2")}</span> with <span class="m"><i>x</i>(1) = 2</span>:</li>
+          </ul>
+          <div class="math-block"><i>u</i>*(<i>t</i>) = ${fr("<i>t</i><sup>2</sup> − 9", "2")}, &nbsp;&nbsp; <i>x</i>*(<i>t</i>) = ${fr("9<i>t</i>", "2")} − ${fr("<i>t</i><sup>3</sup>", "6")} − ${fr("7", "3")}.</div>
+        `
+      },
+
+      // ==================== HW 2: 2026-10-23 ====================
+      {
+        id: "hw2-1",
+        deck: "hw-10-23",
+        tag: "HW 2026-10-23 · Ex. 1",
+        title: "Tumor Growth Drug Therapy (Terminal Payoff)",
+        q: `<div class="math-block">min<sub><i>u</i></sub> [<i>x</i>(<i>T</i>) + ${intg("0", "<i>T</i>")} <i>u</i><sup>2</sup>(<i>t</i>) <i>dt</i>] &nbsp; subject to &nbsp; ${cases(["<i>x</i>'(<i>t</i>) = α<i>x</i>(<i>t</i>) − <i>u</i>(<i>t</i>), &nbsp; <i>t</i> ∈ [0, <i>T</i>]", "<i>x</i>(0) = <i>x</i><sub>0</sub>"])}</div><p>with <span class="m">α &gt; 0</span>, <span class="m"><i>x</i><sub>0</sub> &gt; 0</span>, unconstrained <span class="m"><i>u</i></span>. Find <span class="m">(<i>x</i>*, <i>u</i>*)</span>.</p>`,
+        a: `
+          <ul class="bullet-list">
+            <li><span class="m"><i>H</i> = <i>u</i><sup>2</sup> + λ(α<i>x</i> − <i>u</i>)</span>, <span class="m">φ(<i>x</i>) = <i>x</i> ⇒ φ'(<i>x</i>) = 1</span>.</li>
+            <li><span class="m"><i>H</i><sub><i>u</i></sub> = 2<i>u</i> − λ = 0 ⇒ <i>u</i>* = ${fr("λ", "2")}</span>.</li>
+            <li>Adjoint &amp; transversality: <span class="m">λ' = −αλ</span>, <span class="m">λ(<i>T</i>) = 1 ⇒ λ(<i>t</i>) = <i>e</i><sup>α(<i>T</i>−<i>t</i>)</sup></span>.</li>
+            <li>State ODE <span class="m"><i>x</i>' − α<i>x</i> = −${fr("1", "2")}<i>e</i><sup>α(<i>T</i>−<i>t</i>)</sup></span>, <span class="m"><i>x</i>(0) = <i>x</i><sub>0</sub></span>:</li>
+          </ul>
+          <div class="math-block"><i>u</i>*(<i>t</i>) = ${fr("1", "2")}<i>e</i><sup>α(<i>T</i>−<i>t</i>)</sup>, &nbsp;&nbsp; <i>x</i>*(<i>t</i>) = <i>x</i><sub>0</sub><i>e</i><sup>α<i>t</i></sup> − ${fr("<i>e</i><sup>α<i>T</i></sup>", "4α")}(<i>e</i><sup>α<i>t</i></sup> − <i>e</i><sup>−α<i>t</i></sup>).</div>
+        `
+      },
+      {
+        id: "hw2-2",
+        deck: "hw-10-23",
+        tag: "HW 2026-10-23 · Ex. 2",
+        title: "Terminal Payoff: x(1) + ∫₀¹ u² dt with x' = −x + u",
+        q: `<div class="math-block">min<sub><i>u</i></sub> [<i>x</i>(1) + ${intg("0", "1")} <i>u</i><sup>2</sup>(<i>t</i>) <i>dt</i>] &nbsp; subject to &nbsp; ${cases(["<i>x</i>' = −<i>x</i> + <i>u</i>", "<i>x</i>(0) = 2"])}</div><p>Find <span class="m">(<i>x</i>*, <i>u</i>*)</span>.</p>`,
+        a: `
+          <ul class="bullet-list">
+            <li><span class="m"><i>H</i> = <i>u</i><sup>2</sup> + λ(−<i>x</i> + <i>u</i>)</span>, <span class="m"><i>H</i><sub><i>u</i></sub> = 2<i>u</i> + λ = 0 ⇒ <i>u</i>* = −${fr("λ", "2")}</span>.</li>
+            <li><span class="m">λ' = λ</span>, <span class="m">λ(1) = 1 ⇒ λ(<i>t</i>) = <i>e</i><sup><i>t</i>−1</sup></span>.</li>
+            <li>State ODE <span class="m"><i>x</i>' + <i>x</i> = −${fr("1", "2")}<i>e</i><sup><i>t</i>−1</sup></span>, <span class="m"><i>x</i>(0) = 2</span>:</li>
+          </ul>
+          <div class="math-block"><i>u</i>*(<i>t</i>) = −${fr("1", "2")}<i>e</i><sup><i>t</i>−1</sup>, &nbsp;&nbsp; <i>x</i>*(<i>t</i>) = 2<i>e</i><sup>−<i>t</i></sup> − ${fr("1", "4<i>e</i>")}(<i>e</i><sup><i>t</i></sup> − <i>e</i><sup>−<i>t</i></sup>).</div>
+        `
+      },
+      {
+        id: "hw2-3",
+        deck: "hw-10-23",
+        tag: "HW 2026-10-23 · Ex. 3",
+        title: "Terminal Payoff: x(1) + ∫₀¹ (x² + u²) dt",
+        q: `<div class="math-block">min<sub><i>u</i></sub> [<i>x</i>(1) + ${intg("0", "1")} (<i>x</i><sup>2</sup> + <i>u</i><sup>2</sup>) <i>dt</i>] &nbsp; subject to &nbsp; ${cases(["<i>x</i>' = <i>u</i>", "<i>x</i>(0) = 0"])}</div><p>Find <span class="m">(<i>x</i>*, <i>u</i>*)</span>.</p>`,
+        a: `
+          <ul class="bullet-list">
+            <li><span class="m"><i>H</i> = <i>x</i><sup>2</sup> + <i>u</i><sup>2</sup> + λ<i>u</i></span>, <span class="m"><i>u</i>* = −${fr("λ", "2")}</span>, <span class="m">λ' = −2<i>x</i></span>, <span class="m">λ(1) = 1</span>.</li>
+            <li><span class="m"><i>x</i>'' = <i>x</i></span> with <span class="m"><i>x</i>(0) = 0 ⇒ <i>x</i>*(<i>t</i>) = 2<i>c</i> sinh <i>t</i></span>, &nbsp; <span class="m">λ(<i>t</i>) = −4<i>c</i> cosh <i>t</i></span>.</li>
+            <li><span class="m">λ(1) = 1 ⇒ <i>c</i> = −${fr("1", "4 cosh 1")} = −${fr("<i>e</i>", "2(<i>e</i><sup>2</sup> + 1)")}</span>.</li>
+          </ul>
+          <div class="math-block"><i>x</i>*(<i>t</i>) = −${fr("sinh <i>t</i>", "2 cosh 1")} = −${fr("<i>e</i>(<i>e</i><sup><i>t</i></sup> − <i>e</i><sup>−<i>t</i></sup>)", "2(<i>e</i><sup>2</sup> + 1)")}, &nbsp;&nbsp; <i>u</i>*(<i>t</i>) = −${fr("cosh <i>t</i>", "2 cosh 1")}.</div>
+        `
+      },
+
+      // ==================== HW 3: 2026-11-06 ====================
+      {
+        id: "hw3-1",
+        deck: "hw-11-06",
+        tag: "HW 2026-11-06 · Ex. 1",
+        title: "Bounded Max with Two Switching Times",
+        q: `<div class="math-block">max<sub><i>u</i>∈𝒜</sub> ${intg("0", "2")} (2<i>x</i> − 3<i>u</i> − <i>u</i><sup>2</sup>) <i>dt</i> &nbsp; subject to &nbsp; ${cases(["<i>x</i>' = <i>x</i> + <i>u</i>", "<i>x</i>(0) = 5"])} &nbsp; 𝒜 = {0 ≤ <i>u</i> ≤ 2}</div><p>Determine <span class="m"><i>u</i>*</span> and show how to compute <span class="m"><i>x</i>*</span>.</p>`,
+        a: `
+          <ul class="bullet-list">
+            <li><span class="m"><i>H</i> = 2<i>x</i> − 3<i>u</i> − <i>u</i><sup>2</sup> + λ(<i>x</i> + <i>u</i>)</span>, &nbsp; <span class="m"><i>H</i><sub><i>u</i></sub> = −3 − 2<i>u</i> + λ</span>.</li>
+            <li><span class="m">λ' = −2 − λ</span>, <span class="m">λ(2) = 0 ⇒ λ(<i>t</i>) = 2<i>e</i><sup>2−<i>t</i></sup> − 2</span> (decreases from <span class="m">2<i>e</i><sup>2</sup>−2 ≈ 12.78</span> to <span class="m">0</span>).</li>
+            <li>Clipped max on <span class="m">[0, 2]</span>: <span class="m"><i>u</i>* = 2</span> if <span class="m">λ &gt; 7</span>; &nbsp; <span class="m">(λ−3)/2</span> if <span class="m">3 ≤ λ ≤ 7</span>; &nbsp; <span class="m">0</span> if <span class="m">λ &lt; 3</span>.</li>
+            <li>Switches: <span class="m"><i>t</i><sub>1</sub> = 2 − ln(9/2) ≈ 0.496</span>, &nbsp; <span class="m"><i>t</i><sub>2</sub> = 2 − ln(5/2) ≈ 1.084</span>.</li>
+          </ul>
+          <div class="math-block"><i>u</i>*(<i>t</i>) = ${cases(["2, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>t</i> ∈ [0, 2 − ln(9/2)]", "<i>e</i><sup>2−<i>t</i></sup> − 5/2, &nbsp;&nbsp;&nbsp; <i>t</i> ∈ (2 − ln(9/2), 2 − ln(5/2))", "0, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>t</i> ∈ [2 − ln(5/2), 2]"])}</div>
+          <p><strong>Computing <i>x</i>*:</strong> Solve three consecutive IVPs matching at <span class="m"><i>t</i><sub>1</sub>, <i>t</i><sub>2</sub></span>: (1) <span class="m"><i>x</i>' = <i>x</i>+2, <i>x</i>(0)=5 ⇒ 7<i>e</i><sup><i>t</i></sup>−2</span> on <span class="m">[0, <i>t</i><sub>1</sub>]</span>; (2) <span class="m"><i>x</i>' = <i>x</i> + <i>e</i><sup>2−<i>t</i></sup> − 5/2</span> on <span class="m">[<i>t</i><sub>1</sub>, <i>t</i><sub>2</sub>]</span>; (3) <span class="m"><i>x</i>' = <i>x</i></span> on <span class="m">[<i>t</i><sub>2</sub>, 2]</span>.</p>
+        `
+      },
+      {
+        id: "hw3-2",
+        deck: "hw-11-06",
+        tag: "HW 2026-11-06 · Ex. 2 (Bang-Bang)",
+        title: "Bang-Bang Control with Fixed Endpoints (x(0)=1, x(1)=0)",
+        q: `<div class="math-block">min<sub><i>u</i>∈𝒜</sub> ${intg("0", "1")} <i>u</i>(<i>t</i>) <i>dt</i> &nbsp; subject to &nbsp; ${cases(["<i>x</i>' = <i>x</i> − <i>u</i>", "<i>x</i>(0) = 1, &nbsp; <i>x</i>(1) = 0"])} &nbsp; 𝒜 = {0 ≤ <i>u</i> ≤ 2}</div><p>Determine <span class="m">(<i>x</i>*, <i>u</i>*)</span>.</p>`,
+        a: `
+          <ul class="bullet-list">
+            <li><span class="m"><i>H</i> = <i>u</i> + λ(<i>x</i> − <i>u</i>)</span>, &nbsp; <span class="m"><i>H</i><sub><i>u</i></sub> = 1 − λ</span> (linear in <span class="m"><i>u</i></span> ⇒ bang-bang).</li>
+            <li>Min rule: <span class="m">λ &lt; 1 ⇒ <i>u</i>* = 0</span>; &nbsp; <span class="m">λ &gt; 1 ⇒ <i>u</i>* = 2</span>.</li>
+            <li><strong>No transversality condition</strong> (since <span class="m"><i>x</i>(1) = 0</span> is fixed): <span class="m">λ' = −λ ⇒ λ(<i>t</i>) = <i>ce</i><sup>−<i>t</i></sup></span>.</li>
+            <li><span class="m"><i>c</i> ≤ 1 ⇒ <i>u</i>* ≡ 0 ⇒ <i>x</i>(1) = <i>e</i> ≠ 0</span>; &nbsp; <span class="m"><i>c</i> ≥ <i>e</i> ⇒ <i>u</i>* ≡ 2 ⇒ <i>x</i>(1) = 2 − <i>e</i> ≠ 0</span>. So <span class="m"><i>c</i> ∈ (1, <i>e</i>)</span> and switch is <span class="m">τ = ln <i>c</i> ∈ (0, 1)</span>.</li>
+            <li>On <span class="m">[0, ln <i>c</i>)</span>: <span class="m"><i>x</i>*(<i>t</i>) = 2 − <i>e</i><sup><i>t</i></sup></span>, so <span class="m"><i>x</i>*(ln <i>c</i>) = 2 − <i>c</i></span>. On <span class="m">[ln <i>c</i>, 1]</span>: <span class="m"><i>x</i>*(<i>t</i>) = (2 − <i>c</i>)<i>e</i><sup><i>t</i>−ln <i>c</i></sup></span>. Setting <span class="m"><i>x</i>*(1) = 0</span> gives <span class="m"><i>c</i> = 2</span>, <span class="m">τ = ln 2</span>.</li>
+          </ul>
+          <div class="math-block"><i>u</i>*(<i>t</i>) = ${cases(["2, &nbsp; <i>t</i> ∈ [0, ln 2)", "0, &nbsp; <i>t</i> ∈ [ln 2, 1]"])} &nbsp;&nbsp; <i>x</i>*(<i>t</i>) = ${cases(["2 − <i>e</i><sup><i>t</i></sup>, &nbsp; <i>t</i> ∈ [0, ln 2)", "0, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>t</i> ∈ [ln 2, 1]"])}</div>
+        `
+      },
+      {
+        id: "hw3-3",
+        deck: "hw-11-06",
+        tag: "HW 2026-11-06 · Ex. 3",
+        title: "Time-Dependent Running Cost: ∫₁² (tu² + t²x) dt",
+        q: `<div class="math-block">min<sub><i>u</i></sub> ${intg("1", "2")} (<i>tu</i><sup>2</sup> + <i>t</i><sup>2</sup><i>x</i>) <i>dt</i> &nbsp; subject to &nbsp; ${cases(["<i>x</i>' = −<i>u</i>", "<i>x</i>(1) = 1"])}</div><p>Determine <span class="m">(<i>x</i>*, <i>u</i>*)</span>.</p>`,
+        a: `
+          <ul class="bullet-list">
+            <li><span class="m"><i>H</i> = <i>tu</i><sup>2</sup> + <i>t</i><sup>2</sup><i>x</i> − λ<i>u</i></span>, &nbsp; <span class="m"><i>H</i><sub><i>u</i></sub> = 2<i>tu</i> − λ = 0 ⇒ <i>u</i>* = ${fr("λ", "2<i>t</i>")}</span>.</li>
+            <li><span class="m">λ' = −<i>t</i><sup>2</sup></span>, <span class="m">λ(2) = 0 ⇒ λ(<i>t</i>) = ${fr("8 − <i>t</i><sup>3</sup>", "3")}</span>.</li>
+            <li>Integrate <span class="m"><i>x</i>' = −<i>u</i>*</span> with <span class="m"><i>x</i>(1) = 1</span>:</li>
+          </ul>
+          <div class="math-block"><i>u</i>*(<i>t</i>) = ${fr("4", "3<i>t</i>")} − ${fr("<i>t</i><sup>2</sup>", "6")}, &nbsp;&nbsp; <i>x</i>*(<i>t</i>) = −${fr("4", "3")} ln <i>t</i> + ${fr("<i>t</i><sup>3</sup> + 17", "18")}.</div>
+        `
+      },
+      {
+        id: "hw3-4",
+        deck: "hw-11-06",
+        tag: "HW 2026-11-06 · Ex. 4",
+        title: "Bounded Control + Terminal Payoff on [0, 1]",
+        q: `<div class="math-block">max<sub><i>u</i>∈𝒜</sub> { ${intg("0", "1")} (<i>u</i> − ${fr("1", "2")}<i>u</i><sup>2</sup>) <i>dt</i> + <i>x</i>(1) } &nbsp; subject to &nbsp; ${cases(["<i>x</i>' = <i>u</i> − <i>x</i>", "<i>x</i>(0) = 0"])} &nbsp; 𝒜 = {0 ≤ <i>u</i> ≤ 3/2}</div><p>Determine <span class="m">(<i>x</i>*, <i>u</i>*)</span>.</p>`,
+        a: `
+          <ul class="bullet-list">
+            <li><span class="m"><i>H</i> = <i>u</i> − ${fr("1", "2")}<i>u</i><sup>2</sup> + λ(<i>u</i> − <i>x</i>)</span>, &nbsp; <span class="m"><i>H</i><sub><i>u</i></sub> = 1 − <i>u</i> + λ</span>, &nbsp; <span class="m">φ(<i>x</i>) = <i>x</i></span>.</li>
+            <li><span class="m">λ' = λ</span>, <span class="m">λ(1) = 1 ⇒ λ(<i>t</i>) = <i>e</i><sup><i>t</i>−1</sup></span>.</li>
+            <li>Unconstrained maximizer <span class="m">1 + <i>e</i><sup><i>t</i>−1</sup></span> hits upper bound <span class="m">3/2</span> at <span class="m"><i>e</i><sup><i>t</i>−1</sup> = 1/2 ⇔ <i>t</i> = 1 − ln 2 ≈ 0.307</span>.</li>
+          </ul>
+          <div class="math-block"><i>u</i>*(<i>t</i>) = ${cases(["1 + <i>e</i><sup><i>t</i>−1</sup>, &nbsp; <i>t</i> ∈ [0, 1 − ln 2]", "3/2, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>t</i> ∈ (1 − ln 2, 1]"])}</div>
+          <div class="math-block"><i>x</i>*(<i>t</i>) = ${cases([`1 − <i>e</i><sup>−<i>t</i></sup> + ${fr("1", "2")}<i>e</i><sup><i>t</i>−1</sup> − ${fr("1", "2")}<i>e</i><sup>−<i>t</i>−1</sup>, &nbsp; <i>t</i> ∈ [0, 1 − ln 2]`, `${fr("3", "2")} − (${fr("<i>e</i>", "8")} + 1 + ${fr("1", "2<i>e</i>")})<i>e</i><sup>−<i>t</i></sup>, &nbsp;&nbsp;&nbsp;&nbsp; <i>t</i> ∈ (1 − ln 2, 1]`])}</div>
+        `
+      },
+
+      // ==================== HW 4: 2026-11-14 ====================
+      {
+        id: "hw4-1",
+        deck: "hw-11-14",
+        tag: "HW 2026-11-14 · Ex. 1",
+        title: "Bounded Max on [0, 3] with Two Switches",
+        q: `<div class="math-block">max<sub><i>u</i>∈𝒜</sub> ${intg("0", "3")} (4<i>x</i> − <i>u</i> − <i>u</i><sup>2</sup>) <i>dt</i> &nbsp; subject to &nbsp; ${cases(["<i>x</i>' = <i>u</i> − <i>x</i>", "<i>x</i>(0) = 2"])} &nbsp; 𝒜 = {0 ≤ <i>u</i> ≤ 1}</div><p>Determine <span class="m"><i>u</i>*</span> and compute <span class="m"><i>x</i>*</span>.</p>`,
+        a: `
+          <ul class="bullet-list">
+            <li><span class="m"><i>H</i> = 4<i>x</i> − <i>u</i> − <i>u</i><sup>2</sup> + λ(<i>u</i> − <i>x</i>)</span>, &nbsp; <span class="m"><i>H</i><sub><i>u</i></sub> = −1 − 2<i>u</i> + λ</span>.</li>
+            <li><span class="m">λ' = −4 + λ</span>, <span class="m">λ(3) = 0 ⇒ λ(<i>t</i>) = 4 − 4<i>e</i><sup><i>t</i>−3</sup></span> (decreases from <span class="m">4−4<i>e</i><sup>−3</sup> ≈ 3.80</span> to <span class="m">0</span>).</li>
+            <li>Clipped max on <span class="m">[0, 1]</span>: <span class="m"><i>u</i>* = 1</span> (<span class="m">λ &gt; 3</span>); <span class="m">(λ−1)/2</span> (<span class="m">1 ≤ λ ≤ 3</span>); <span class="m">0</span> (<span class="m">λ &lt; 1</span>).</li>
+            <li>Switches: <span class="m"><i>t</i><sub>1</sub> = 3 − ln 4 ≈ 1.614</span>, &nbsp; <span class="m"><i>t</i><sub>2</sub> = 3 − ln(4/3) ≈ 2.712</span>.</li>
+          </ul>
+          <div class="math-block"><i>u</i>*(<i>t</i>) = ${cases([`1, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>t</i> ∈ [0, 3 − ln 4]`, `${fr("3", "2")} − 2<i>e</i><sup><i>t</i>−3</sup>, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>t</i> ∈ (3 − ln 4, 3 − ln(4/3))`, `0, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>t</i> ∈ [3 − ln(4/3), 3]`])}</div>
+          <div class="math-block"><i>x</i>*(<i>t</i>) = ${cases([`1 + <i>e</i><sup>−<i>t</i></sup>, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>t</i> ∈ [0, 3 − ln 4]`, `${fr("3", "2")} − <i>e</i><sup><i>t</i>−3</sup> + (1 − ${fr("<i>e</i><sup>3</sup>", "16")})<i>e</i><sup>−<i>t</i></sup>, &nbsp; <i>t</i> ∈ (3 − ln 4, 3 − ln(4/3))`, `(${fr("<i>e</i><sup>3</sup>", "2")} + 1)<i>e</i><sup>−<i>t</i></sup>, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>t</i> ∈ [3 − ln(4/3), 3]`])}</div>
+        `
+      },
+      {
+        id: "hw4-2",
+        deck: "hw-11-14",
+        tag: "HW 2026-11-14 · Ex. 2 (Bang-Bang)",
+        title: "Bang-Bang Control with Fixed Endpoints (x(0)=0, x(1)=1)",
+        q: `<div class="math-block">min<sub><i>u</i>∈𝒜</sub> ${intg("0", "1")} <i>u</i>(<i>t</i>) <i>dt</i> &nbsp; subject to &nbsp; ${cases(["<i>x</i>' = <i>u</i> − 2<i>x</i>", "<i>x</i>(0) = 0, &nbsp; <i>x</i>(1) = 1"])} &nbsp; 𝒜 = {0 ≤ <i>u</i> ≤ 3}</div><p>Determine <span class="m">(<i>x</i>*, <i>u</i>*)</span>.</p>`,
+        a: `
+          <ul class="bullet-list">
+            <li><span class="m"><i>H</i> = <i>u</i> + λ(<i>u</i> − 2<i>x</i>)</span>, &nbsp; <span class="m"><i>H</i><sub><i>u</i></sub> = 1 + λ</span> (bang-bang).</li>
+            <li>Min rule: <span class="m">λ &gt; −1 ⇒ <i>u</i>* = 0</span>; &nbsp; <span class="m">λ &lt; −1 ⇒ <i>u</i>* = 3</span>.</li>
+            <li><strong>No transversality condition</strong>: <span class="m">λ' = 2λ ⇒ λ(<i>t</i>) = <i>ce</i><sup>2<i>t</i></sup></span>. Must have <span class="m"><i>c</i> &lt; 0</span> (else <span class="m"><i>u</i>* ≡ 0</span>), so <span class="m">λ</span> is strictly decreasing: <span class="m"><i>u</i>* = 0</span> on <span class="m">[0, τ)</span> and <span class="m"><i>u</i>* = 3</span> on <span class="m">[τ, 1]</span>.</li>
+            <li>On <span class="m">[0, τ)</span>: <span class="m"><i>x</i>*(<i>t</i>) = 0</span>. On <span class="m">[τ, 1]</span>: <span class="m"><i>x</i>*(<i>t</i>) = ${fr("3", "2")}(1 − <i>e</i><sup>−2(<i>t</i>−τ)</sup>)</span>.</li>
+            <li>Impose <span class="m"><i>x</i>*(1) = 1</span>: <span class="m">${fr("3", "2")}(1 − <i>e</i><sup>−2(1−τ)</sup>) = 1 ⇒ <i>e</i><sup>−2(1−τ)</sup> = ${fr("1", "3")} ⇒ τ = 1 − ${fr("1", "2")} ln 3 ≈ 0.451</span>.</li>
+          </ul>
+          <div class="math-block"><i>u</i>*(<i>t</i>) = ${cases([`0, &nbsp; <i>t</i> ∈ [0, 1 − ½ ln 3)`, `3, &nbsp; <i>t</i> ∈ [1 − ½ ln 3, 1]`])} &nbsp;&nbsp; <i>x</i>*(<i>t</i>) = ${cases([`0, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>t</i> ∈ [0, 1 − ½ ln 3)`, `${fr("3", "2")}(1 − ${fr("1", "3")}<i>e</i><sup>2(1−<i>t</i>)</sup>), &nbsp; <i>t</i> ∈ [1 − ½ ln 3, 1]`])}</div>
+        `
+      },
+      {
+        id: "hw4-3",
+        deck: "hw-11-14",
+        tag: "HW 2026-11-14 · Ex. 3",
+        title: "Bounded Min + Terminal Payoff: ∫₀² (u² + 2tx) dt + x(2)",
+        q: `<div class="math-block">min<sub><i>u</i>∈𝒜</sub> { ${intg("0", "2")} (<i>u</i><sup>2</sup> + 2<i>tx</i>) <i>dt</i> + <i>x</i>(2) } &nbsp; subject to &nbsp; ${cases(["<i>x</i>' = −<i>u</i>", "<i>x</i>(0) = 2"])} &nbsp; 𝒜 = {0 ≤ <i>u</i> ≤ 2}</div><p>Determine <span class="m">(<i>x</i>*, <i>u</i>*)</span>.</p>`,
+        a: `
+          <ul class="bullet-list">
+            <li><span class="m"><i>H</i> = <i>u</i><sup>2</sup> + 2<i>tx</i> − λ<i>u</i></span>, &nbsp; <span class="m"><i>H</i><sub><i>u</i></sub> = 2<i>u</i> − λ</span>, &nbsp; <span class="m">φ(<i>x</i>) = <i>x</i></span>.</li>
+            <li><span class="m">λ' = −2<i>t</i></span>, <span class="m">λ(2) = 1 ⇒ λ(<i>t</i>) = 5 − <i>t</i><sup>2</sup></span> (ranges over <span class="m">[1, 5]</span> on <span class="m">[0, 2]</span>).</li>
+            <li>Clipped min on <span class="m">[0, 2]</span>: <span class="m"><i>u</i>* = 2</span> if <span class="m">λ &gt; 4</span> (<span class="m"><i>t</i> &lt; 1</span>); &nbsp; <span class="m"><i>u</i>* = λ/2</span> if <span class="m">0 ≤ λ ≤ 4</span> (<span class="m"><i>t</i> ≥ 1</span>).</li>
+            <li>Integrate <span class="m"><i>x</i>' = −<i>u</i>*</span> with <span class="m"><i>x</i>(0) = 2</span> (matching <span class="m"><i>x</i>*(1) = 0</span>):</li>
+          </ul>
+          <div class="math-block"><i>u</i>*(<i>t</i>) = ${cases([`2, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>t</i> ∈ [0, 1]`, `${fr("5 − <i>t</i><sup>2</sup>", "2")}, &nbsp; <i>t</i> ∈ (1, 2]`])} &nbsp;&nbsp; <i>x</i>*(<i>t</i>) = ${cases([`2 − 2<i>t</i>, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>t</i> ∈ [0, 1]`, `${fr("<i>t</i><sup>3</sup>", "6")} − ${fr("5<i>t</i>", "2")} + ${fr("7", "3")}, &nbsp; <i>t</i> ∈ (1, 2]`])}</div>
+        `
+      }
+    ];
+
+    // Lecture / homework dates mapped from your MCT class notes
+    const CARD_DATES = {
+      "t1-1": "Notes: 2026-10-08",
+      "t1-2": "Notes: 2026-10-08",
+      "t1-3": "Notes: 2026-10-08",
+      "t1-4": "Notes: 2026-10-08 & 2026-10-15",
+      "t2-1": "Notes: 2026-10-15",
+      "t2-2": "Notes: 2026-10-15",
+      "t3-1": "Notes: 2026-10-15 & 2026-10-19",
+      "t3-2": "Notes: 2026-10-15 & 2026-10-19",
+      "t4-1": "Notes: 2026-10-19",
+      "t4-2": "Notes: 2026-10-19",
+      "t4-3": "Notes: 2026-10-19",
+      "t5-1": "Notes: 2026-10-19",
+      "t6-1": "Notes: 2026-10-22",
+      "t7-1": "Notes: 2026-10-22",
+      "t7-2": "Notes: 2026-11-05",
+      "t8-1": "Notes: 2026-10-22 & 2026-10-29",
+      "t8-2": "Notes: 2026-11-05 & 2026-11-12",
+      "hw1-1": "HW: 2026-10-16 · Notes: 2026-10-15",
+      "hw1-2": "HW: 2026-10-16 · Notes: 2026-10-15 & 10-31",
+      "hw1-3": "HW: 2026-10-16 · Notes: 2026-10-15",
+      "hw1-4": "HW: 2026-10-16 · Notes: 2026-10-15",
+      "hw1-5": "HW: 2026-10-16 · Notes: 2026-10-15",
+      "hw1-6": "HW: 2026-10-16 · Notes: 2026-10-15",
+      "hw2-1": "HW: 2026-10-23 · Notes: 2026-10-22",
+      "hw2-2": "HW: 2026-10-23 · Notes: 2026-10-22",
+      "hw2-3": "HW: 2026-10-23 · Notes: 2026-10-22",
+      "hw3-1": "HW: 2026-11-06 · Notes: 2026-10-29",
+      "hw3-2": "HW: 2026-11-06 · Notes: 2026-11-05",
+      "hw3-3": "HW: 2026-11-06 · Notes: 2026-10-15",
+      "hw3-4": "HW: 2026-11-06 · Notes: 2026-10-22 & 10-29",
+      "hw4-1": "HW: 2026-11-14 · Notes: 2026-10-29",
+      "hw4-2": "HW: 2026-11-14 · Notes: 2026-11-05",
+      "hw4-3": "HW: 2026-11-14 · Notes: 2026-10-22 & 10-29"
+    };
+
+    // State
+    const STORAGE_KEY = "mct_pignotti_flashcards_v1";
+    let progress = {};
+    try { progress = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); } catch {}
+
+    let selectedDecks = new Set(DECKS.map(d => d.id));
+    let mode = "card"; // "card" | "list"
+    let missedOnly = false;
+    let currentOrder = CARDS.map(c => c.id);
+    let currentIndex = 0;
+    let answerOpen = false;
+
+    const saveProgress = () => {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(progress)); } catch {}
+    };
+
+    const getFilteredCards = () => {
+      const byId = new Map(CARDS.map(c => [c.id, c]));
+      return currentOrder
+        .map(id => byId.get(id))
+        .filter(c => selectedDecks.has(c.deck))
+        .filter(c => !missedOnly || progress[c.id] === "review");
+    };
+
+    const deckCount = (deckId) => CARDS.filter(c => c.deck === deckId).length;
+
+    const renderDecks = () => {
+      const wrap = document.getElementById("deckButtons");
+      wrap.innerHTML = "";
+      DECKS.forEach(d => {
+        const isSelected = selectedDecks.has(d.id);
+        const btn = document.createElement("button");
+        btn.className = `px-3 py-1.5 text-xs rounded-lg border transition cursor-pointer inline-flex items-center gap-1.5 ${
+          isSelected
+            ? "bg-[var(--primary)] text-[var(--primary-foreground)] border-[var(--primary)] font-semibold"
+            : "bg-transparent text-[var(--muted-foreground)] border-[var(--border)] hover:text-[var(--foreground)]"
+        }`;
+        btn.innerHTML = `<span>${isSelected ? "✓" : "+"}</span><span>${d.label} (${deckCount(d.id)})</span>`;
+        btn.onclick = () => {
+          if (selectedDecks.has(d.id)) {
+            selectedDecks.delete(d.id);
+          } else {
+            selectedDecks.add(d.id);
+          }
+          currentIndex = 0;
+          answerOpen = false;
+      
+    // Theme init (system preference + saved override)
+    const THEME_KEY = "mct_pignotti_theme_v1";
+    const applyTheme = (t) => {
+      document.documentElement.classList.toggle("dark", t === "dark");
+      const btn = document.getElementById("themeToggleBtn");
+      if (btn) btn.textContent = t === "dark" ? "☀ Light" : "☾ Dark";
+    };
+    let savedTheme = null;
+    try { savedTheme = localStorage.getItem(THEME_KEY); } catch {}
+    const initialTheme = savedTheme || (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    applyTheme(initialTheme);
+    document.getElementById("themeToggleBtn").onclick = () => {
+      const next = document.documentElement.classList.contains("dark") ? "light" : "dark";
+      try { localStorage.setItem(THEME_KEY, next); } catch {}
+      applyTheme(next);
+    };
+
+    render();
+        };
+        wrap.appendChild(btn);
+      });
+    };
+
+    const renderStats = () => {
+      const scope = CARDS.filter(c => selectedDecks.has(c.deck));
+      const mastered = scope.filter(c => progress[c.id] === "mastered").length;
+      const review = scope.filter(c => progress[c.id] === "review").length;
+      const pct = scope.length ? Math.round((mastered / scope.length) * 100) : 0;
+      document.getElementById("masterySummary").textContent =
+        `${mastered}/${scope.length} mastered · ${review} review (${pct}%)`;
+      document.getElementById("progressBar").style.width = `${pct}%`;
+    };
+
+    const renderModeButtons = () => {
+      const cardBtn = document.getElementById("modeCardBtn");
+      const listBtn = document.getElementById("modeListBtn");
+      const missedBtn = document.getElementById("missedToggleBtn");
+      cardBtn.className = `px-3 py-1.5 font-medium transition cursor-pointer ${
+        mode === "card" ? "bg-[var(--primary)] text-[var(--primary-foreground)]" : "text-[var(--muted-foreground)]"
+      }`;
+      listBtn.className = `px-3 py-1.5 font-medium transition cursor-pointer ${
+        mode === "list" ? "bg-[var(--primary)] text-[var(--primary-foreground)]" : "text-[var(--muted-foreground)]"
+      }`;
+      missedBtn.className = `px-3 py-1.5 text-xs rounded-lg border transition cursor-pointer ${
+        missedOnly
+          ? "border-[var(--warning)] text-[var(--warning)] font-semibold"
+          : "border-[var(--border)] text-[var(--foreground)] hover:opacity-85"
+      }`;
+    };
+
+    const renderCardView = (cards) => {
+      const empty = document.getElementById("emptyState");
+      const container = document.getElementById("cardContainer");
+      const navBar = document.getElementById("navBar");
+
+      if (!cards.length) {
+        empty.classList.remove("hidden");
+        container.classList.add("hidden");
+        navBar.classList.add("hidden");
+        return;
+      }
+      empty.classList.add("hidden");
+      container.classList.remove("hidden");
+      navBar.classList.remove("hidden");
+
+      if (currentIndex >= cards.length) currentIndex = cards.length - 1;
+      if (currentIndex < 0) currentIndex = 0;
+
+      const card = cards[currentIndex];
+      const deckObj = DECKS.find(d => d.id === card.deck);
+      document.getElementById("cardDeckBadge").textContent = deckObj ? deckObj.label : card.deck;
+      document.getElementById("cardTagBadge").textContent = card.tag;
+      document.getElementById("cardDateBadge").textContent = CARD_DATES[card.id] || "";
+      document.getElementById("cardCounter").textContent = `Card ${currentIndex + 1} / ${cards.length}`;
+
+      const statusBadge = document.getElementById("cardStatusBadge");
+      const st = progress[card.id];
+      if (st === "mastered") {
+        statusBadge.textContent = "Mastered ✓";
+        statusBadge.className = "px-2 py-0.5 rounded-md font-medium border border-[var(--success)] text-[var(--success)]";
+      } else if (st === "review") {
+        statusBadge.textContent = "Needs Review";
+        statusBadge.className = "px-2 py-0.5 rounded-md font-medium border border-[var(--warning)] text-[var(--warning)]";
+      } else {
+        statusBadge.className = "hidden";
+      }
+
+      document.getElementById("cardTitle").textContent = card.title;
+      document.getElementById("cardQuestion").innerHTML = card.q;
+      document.getElementById("cardAnswer").innerHTML = card.a;
+
+      const ansSec = document.getElementById("answerSection");
+      const toggleBtn = document.getElementById("toggleAnswerBtn");
+      if (answerOpen) {
+        ansSec.classList.remove("hidden");
+        toggleBtn.textContent = "Hide Answer";
+      } else {
+        ansSec.classList.add("hidden");
+        toggleBtn.textContent = "Show Answer";
+      }
+
+      document.getElementById("prevBtn").disabled = currentIndex === 0;
+      document.getElementById("nextBtn").disabled = currentIndex === cards.length - 1;
+      document.getElementById("prevBtn").style.opacity = currentIndex === 0 ? "0.45" : "1";
+      document.getElementById("nextBtn").style.opacity = currentIndex === cards.length - 1 ? "0.45" : "1";
+
+      // Dots
+      const dotNav = document.getElementById("dotNav");
+      dotNav.innerHTML = "";
+      cards.forEach((c, idx) => {
+        const dot = document.createElement("button");
+        const cSt = progress[c.id];
+        let bg = "bg-[var(--border)]";
+        if (idx === currentIndex) bg = "bg-[var(--primary)] scale-125";
+        else if (cSt === "mastered") bg = "bg-[var(--success)]";
+        else if (cSt === "review") bg = "bg-[var(--warning)]";
+        dot.className = `w-2.5 h-2.5 rounded-full transition cursor-pointer ${bg}`;
+        dot.title = `${idx + 1}. ${c.title}`;
+        dot.onclick = () => {
+          currentIndex = idx;
+          answerOpen = false;
+      
+    // Theme init (system preference + saved override)
+    const THEME_KEY = "mct_pignotti_theme_v1";
+    const applyTheme = (t) => {
+      document.documentElement.classList.toggle("dark", t === "dark");
+      const btn = document.getElementById("themeToggleBtn");
+      if (btn) btn.textContent = t === "dark" ? "☀ Light" : "☾ Dark";
+    };
+    let savedTheme = null;
+    try { savedTheme = localStorage.getItem(THEME_KEY); } catch {}
+    const initialTheme = savedTheme || (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    applyTheme(initialTheme);
+    document.getElementById("themeToggleBtn").onclick = () => {
+      const next = document.documentElement.classList.contains("dark") ? "light" : "dark";
+      try { localStorage.setItem(THEME_KEY, next); } catch {}
+      applyTheme(next);
+    };
+
+    render();
+        };
+        dotNav.appendChild(dot);
+      });
+    };
+
+    const renderListView = (cards) => {
+      const list = document.getElementById("listView");
+      if (!cards.length) {
+        list.innerHTML = `<div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-8 text-center text-sm">No cards match the current filter.</div>`;
+        return;
+      }
+      list.innerHTML = "";
+      cards.forEach((c, idx) => {
+        const st = progress[c.id];
+        const statusHtml = st === "mastered"
+          ? `<span class="px-2 py-0.5 rounded text-xs border border-[var(--success)] text-[var(--success)]">Mastered ✓</span>`
+          : st === "review"
+          ? `<span class="px-2 py-0.5 rounded text-xs border border-[var(--warning)] text-[var(--warning)]">Needs Review</span>`
+          : "";
+        const item = document.createElement("details");
+        item.className = "bg-[var(--card)] border border-[var(--border)] rounded-xl overflow-hidden";
+        item.innerHTML = `
+          <summary class="p-4 cursor-pointer list-none select-none">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-1.5 text-xs">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="font-mono text-[var(--muted-foreground)]">#${idx + 1}</span>
+                <span class="px-2 py-0.5 rounded border border-[var(--border)] text-[var(--muted-foreground)]">${c.tag}</span>
+                <span class="px-2 py-0.5 rounded border border-[var(--border)] font-mono text-[var(--muted-foreground)]">${CARD_DATES[c.id] || ""}</span>
+                ${statusHtml}
+              </div>
+              <span class="text-[var(--link)] font-medium">Toggle Answer ▾</span>
+            </div>
+            <div class="font-semibold text-sm mb-1.5">${c.title}</div>
+            <div class="text-sm leading-relaxed">${c.q}</div>
+          </summary>
+          <div class="border-t border-[var(--card-border)] bg-[var(--content)] p-4 text-sm leading-relaxed space-y-2">
+            <div class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">Answer</div>
+            ${c.a}
+          </div>
+        `;
+        list.appendChild(item);
+      });
+    };
+
+    const render = () => {
+      renderDecks();
+      renderStats();
+      renderModeButtons();
+      const cards = getFilteredCards();
+      if (mode === "card") {
+        document.getElementById("cardView").classList.remove("hidden");
+        document.getElementById("listView").classList.add("hidden");
+        renderCardView(cards);
+      } else {
+        document.getElementById("cardView").classList.add("hidden");
+        document.getElementById("listView").classList.remove("hidden");
+        renderListView(cards);
+      }
+    };
+
+    // Event wiring
+    document.getElementById("selectAllDecksBtn").onclick = () => {
+      selectedDecks = new Set(DECKS.map(d => d.id));
+      currentIndex = 0;
+      answerOpen = false;
+  
+    // Theme init (system preference + saved override)
+    const THEME_KEY = "mct_pignotti_theme_v1";
+    const applyTheme = (t) => {
+      document.documentElement.classList.toggle("dark", t === "dark");
+      const btn = document.getElementById("themeToggleBtn");
+      if (btn) btn.textContent = t === "dark" ? "☀ Light" : "☾ Dark";
+    };
+    let savedTheme = null;
+    try { savedTheme = localStorage.getItem(THEME_KEY); } catch {}
+    const initialTheme = savedTheme || (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    applyTheme(initialTheme);
+    document.getElementById("themeToggleBtn").onclick = () => {
+      const next = document.documentElement.classList.contains("dark") ? "light" : "dark";
+      try { localStorage.setItem(THEME_KEY, next); } catch {}
+      applyTheme(next);
+    };
+
+    render();
+    };
+    document.getElementById("clearDecksBtn").onclick = () => {
+      selectedDecks.clear();
+      currentIndex = 0;
+      answerOpen = false;
+  
+    // Theme init (system preference + saved override)
+    const THEME_KEY = "mct_pignotti_theme_v1";
+    const applyTheme = (t) => {
+      document.documentElement.classList.toggle("dark", t === "dark");
+      const btn = document.getElementById("themeToggleBtn");
+      if (btn) btn.textContent = t === "dark" ? "☀ Light" : "☾ Dark";
+    };
+    let savedTheme = null;
+    try { savedTheme = localStorage.getItem(THEME_KEY); } catch {}
+    const initialTheme = savedTheme || (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    applyTheme(initialTheme);
+    document.getElementById("themeToggleBtn").onclick = () => {
+      const next = document.documentElement.classList.contains("dark") ? "light" : "dark";
+      try { localStorage.setItem(THEME_KEY, next); } catch {}
+      applyTheme(next);
+    };
+
+    render();
+    };
+    document.getElementById("modeCardBtn").onclick = () => { mode = "card"; render(); };
+    document.getElementById("modeListBtn").onclick = () => { mode = "list"; render(); };
+
+    document.getElementById("toggleAnswerBtn").onclick = () => {
+      answerOpen = !answerOpen;
+  
+    // Theme init (system preference + saved override)
+    const THEME_KEY = "mct_pignotti_theme_v1";
+    const applyTheme = (t) => {
+      document.documentElement.classList.toggle("dark", t === "dark");
+      const btn = document.getElementById("themeToggleBtn");
+      if (btn) btn.textContent = t === "dark" ? "☀ Light" : "☾ Dark";
+    };
+    let savedTheme = null;
+    try { savedTheme = localStorage.getItem(THEME_KEY); } catch {}
+    const initialTheme = savedTheme || (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    applyTheme(initialTheme);
+    document.getElementById("themeToggleBtn").onclick = () => {
+      const next = document.documentElement.classList.contains("dark") ? "light" : "dark";
+      try { localStorage.setItem(THEME_KEY, next); } catch {}
+      applyTheme(next);
+    };
+
+    render();
+    };
+
+    document.getElementById("prevBtn").onclick = () => {
+      if (currentIndex > 0) { currentIndex--; answerOpen = false; render(); }
+    };
+    document.getElementById("nextBtn").onclick = () => {
+      const cards = getFilteredCards();
+      if (currentIndex < cards.length - 1) { currentIndex++; answerOpen = false; render(); }
+    };
+
+    document.getElementById("markMasteredBtn").onclick = () => {
+      const cards = getFilteredCards();
+      if (!cards.length) return;
+      progress[cards[currentIndex].id] = "mastered";
+      saveProgress();
+      if (currentIndex < cards.length - 1 && !missedOnly) { currentIndex++; answerOpen = false; }
+      else if (missedOnly) { answerOpen = false; }
+  
+    // Theme init (system preference + saved override)
+    const THEME_KEY = "mct_pignotti_theme_v1";
+    const applyTheme = (t) => {
+      document.documentElement.classList.toggle("dark", t === "dark");
+      const btn = document.getElementById("themeToggleBtn");
+      if (btn) btn.textContent = t === "dark" ? "☀ Light" : "☾ Dark";
+    };
+    let savedTheme = null;
+    try { savedTheme = localStorage.getItem(THEME_KEY); } catch {}
+    const initialTheme = savedTheme || (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    applyTheme(initialTheme);
+    document.getElementById("themeToggleBtn").onclick = () => {
+      const next = document.documentElement.classList.contains("dark") ? "light" : "dark";
+      try { localStorage.setItem(THEME_KEY, next); } catch {}
+      applyTheme(next);
+    };
+
+    render();
+    };
+
+    document.getElementById("markReviewBtn").onclick = () => {
+      const cards = getFilteredCards();
+      if (!cards.length) return;
+      progress[cards[currentIndex].id] = "review";
+      saveProgress();
+      if (currentIndex < cards.length - 1) { currentIndex++; answerOpen = false; }
+  
+    // Theme init (system preference + saved override)
+    const THEME_KEY = "mct_pignotti_theme_v1";
+    const applyTheme = (t) => {
+      document.documentElement.classList.toggle("dark", t === "dark");
+      const btn = document.getElementById("themeToggleBtn");
+      if (btn) btn.textContent = t === "dark" ? "☀ Light" : "☾ Dark";
+    };
+    let savedTheme = null;
+    try { savedTheme = localStorage.getItem(THEME_KEY); } catch {}
+    const initialTheme = savedTheme || (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    applyTheme(initialTheme);
+    document.getElementById("themeToggleBtn").onclick = () => {
+      const next = document.documentElement.classList.contains("dark") ? "light" : "dark";
+      try { localStorage.setItem(THEME_KEY, next); } catch {}
+      applyTheme(next);
+    };
+
+    render();
+    };
+
+    document.getElementById("shuffleBtn").onclick = () => {
+      for (let i = currentOrder.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [currentOrder[i], currentOrder[j]] = [currentOrder[j], currentOrder[i]];
+      }
+      currentIndex = 0;
+      answerOpen = false;
+  
+    // Theme init (system preference + saved override)
+    const THEME_KEY = "mct_pignotti_theme_v1";
+    const applyTheme = (t) => {
+      document.documentElement.classList.toggle("dark", t === "dark");
+      const btn = document.getElementById("themeToggleBtn");
+      if (btn) btn.textContent = t === "dark" ? "☀ Light" : "☾ Dark";
+    };
+    let savedTheme = null;
+    try { savedTheme = localStorage.getItem(THEME_KEY); } catch {}
+    const initialTheme = savedTheme || (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    applyTheme(initialTheme);
+    document.getElementById("themeToggleBtn").onclick = () => {
+      const next = document.documentElement.classList.contains("dark") ? "light" : "dark";
+      try { localStorage.setItem(THEME_KEY, next); } catch {}
+      applyTheme(next);
+    };
+
+    render();
+    };
+
+    document.getElementById("missedToggleBtn").onclick = () => {
+      missedOnly = !missedOnly;
+      currentIndex = 0;
+      answerOpen = false;
+  
+    // Theme init (system preference + saved override)
+    const THEME_KEY = "mct_pignotti_theme_v1";
+    const applyTheme = (t) => {
+      document.documentElement.classList.toggle("dark", t === "dark");
+      const btn = document.getElementById("themeToggleBtn");
+      if (btn) btn.textContent = t === "dark" ? "☀ Light" : "☾ Dark";
+    };
+    let savedTheme = null;
+    try { savedTheme = localStorage.getItem(THEME_KEY); } catch {}
+    const initialTheme = savedTheme || (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    applyTheme(initialTheme);
+    document.getElementById("themeToggleBtn").onclick = () => {
+      const next = document.documentElement.classList.contains("dark") ? "light" : "dark";
+      try { localStorage.setItem(THEME_KEY, next); } catch {}
+      applyTheme(next);
+    };
+
+    render();
+    };
+
+    document.getElementById("resetProgressBtn").onclick = () => {
+      progress = {};
+      saveProgress();
+      missedOnly = false;
+  
+    // Theme init (system preference + saved override)
+    const THEME_KEY = "mct_pignotti_theme_v1";
+    const applyTheme = (t) => {
+      document.documentElement.classList.toggle("dark", t === "dark");
+      const btn = document.getElementById("themeToggleBtn");
+      if (btn) btn.textContent = t === "dark" ? "☀ Light" : "☾ Dark";
+    };
+    let savedTheme = null;
+    try { savedTheme = localStorage.getItem(THEME_KEY); } catch {}
+    const initialTheme = savedTheme || (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    applyTheme(initialTheme);
+    document.getElementById("themeToggleBtn").onclick = () => {
+      const next = document.documentElement.classList.contains("dark") ? "light" : "dark";
+      try { localStorage.setItem(THEME_KEY, next); } catch {}
+      applyTheme(next);
+    };
+
+    render();
+    };
+
+    document.addEventListener("keydown", (e) => {
+      if (mode !== "card") return;
+      if (e.code === "Space" || e.code === "Enter") {
+        e.preventDefault();
+        answerOpen = !answerOpen;
+    
+    // Theme init (system preference + saved override)
+    const THEME_KEY = "mct_pignotti_theme_v1";
+    const applyTheme = (t) => {
+      document.documentElement.classList.toggle("dark", t === "dark");
+      const btn = document.getElementById("themeToggleBtn");
+      if (btn) btn.textContent = t === "dark" ? "☀ Light" : "☾ Dark";
+    };
+    let savedTheme = null;
+    try { savedTheme = localStorage.getItem(THEME_KEY); } catch {}
+    const initialTheme = savedTheme || (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    applyTheme(initialTheme);
+    document.getElementById("themeToggleBtn").onclick = () => {
+      const next = document.documentElement.classList.contains("dark") ? "light" : "dark";
+      try { localStorage.setItem(THEME_KEY, next); } catch {}
+      applyTheme(next);
+    };
+
+    render();
+      } else if (e.code === "ArrowRight") {
+        const cards = getFilteredCards();
+        if (currentIndex < cards.length - 1) { currentIndex++; answerOpen = false; render(); }
+      } else if (e.code === "ArrowLeft") {
+        if (currentIndex > 0) { currentIndex--; answerOpen = false; render(); }
+      }
+    });
+
+
+    // Theme init (system preference + saved override)
+    const THEME_KEY = "mct_pignotti_theme_v1";
+    const applyTheme = (t) => {
+      document.documentElement.classList.toggle("dark", t === "dark");
+      const btn = document.getElementById("themeToggleBtn");
+      if (btn) btn.textContent = t === "dark" ? "☀ Light" : "☾ Dark";
+    };
+    let savedTheme = null;
+    try { savedTheme = localStorage.getItem(THEME_KEY); } catch {}
+    const initialTheme = savedTheme || (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    applyTheme(initialTheme);
+    document.getElementById("themeToggleBtn").onclick = () => {
+      const next = document.documentElement.classList.contains("dark") ? "light" : "dark";
+      try { localStorage.setItem(THEME_KEY, next); } catch {}
+      applyTheme(next);
+    };
+
+    render();
+  </script>
+</body>
+</html>
