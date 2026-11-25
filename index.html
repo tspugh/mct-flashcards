@@ -301,6 +301,7 @@
       { id: "pal-noproof", kind: "noproof", label: "Palladino: No Proof (P-1,2,4,6–10)" },
       { id: "theory-proofs", kind: "proof", label: "Pignotti: WITH PROOF (G-1–G-4)" },
       { id: "theory-noproof", kind: "noproof", label: "Pignotti: No Proof (G-5–G-8)" },
+      { id: "pignotti-extra", kind: "extra", label: "Pignotti: Extra Notes (Nov 5 & 12)" },
       { id: "hw-10-16", kind: "hw", label: "Pignotti HW 1 (10-16)" },
       { id: "hw-10-23", kind: "hw", label: "Pignotti HW 2 (10-23)" },
       { id: "hw-11-06", kind: "hw", label: "Pignotti HW 3 (11-06)" },
@@ -479,125 +480,67 @@
         `
       },
 
-      // ==================== PIGNOTTI THEORY: TOPICS 1-4 (WITH PROOFS) ====================
+      // ==================== PIGNOTTI THEORY: WITH PROOF (G-1 TO G-4) ====================
       {
-        id: "t1-1",
+        id: "g-1",
         deck: "theory-proofs",
-        tag: "Topic 1 · Setup",
-        title: "Basic Scalar Optimal Control Problem & Piecewise Continuity",
-        q: `<p>State the basic scalar optimal control problem (dynamics, objective, regularity assumptions) and define what it means for a control <span class="m"><i>u</i> : [<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>] → ℝ</span> to be <strong>piecewise continuous</strong> and <strong>optimal</strong>.</p>`,
+        tag: "G-1 · WITH PROOF",
+        title: "Optimality Conditions in the Scalar Case (Setup, Gronwall Lemma, Proof & Scheme)",
+        q: `<p>State the basic unconstrained scalar optimal control problem, state and <strong>prove</strong> the <strong>first-order necessary optimality conditions</strong> (including uniform convergence of perturbed states via Gronwall's Lemma), and write the Hamiltonian form and 5-step solving scheme.</p>`,
         a: `
-          <p><strong>Problem:</strong> Maximize (or minimize)</p>
-          <div class="math-block"><i>J</i>(<i>u</i>) = ${intg("<i>t</i><sub>0</sub>", "<i>t</i><sub>1</sub>")} <i>f</i>(<i>t</i>, <i>x</i><sup><i>u</i></sup>(<i>t</i>), <i>u</i>(<i>t</i>)) <i>dt</i> &nbsp; subject to &nbsp; ${cases(["<i>x</i>'(<i>t</i>) = <i>g</i>(<i>t</i>, <i>x</i>(<i>t</i>), <i>u</i>(<i>t</i>)), &nbsp; <i>t</i> ∈ [<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>]", "<i>x</i>(<i>t</i><sub>0</sub>) = <i>x</i><sub>0</sub> ∈ ℝ"])}</div>
-          <p>where <span class="m"><i>f</i>, <i>g</i> : [<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>] × ℝ × ℝ → ℝ</span> are <span class="m"><i>C</i><sup>1</sup></span>, and <span class="m"><i>u</i></span> is piecewise continuous (yielding a unique state <span class="m"><i>x</i><sup><i>u</i></sup></span>).</p>
-          <ul class="bullet-list">
-            <li><strong>Piecewise continuous:</strong> continuous on <span class="m">[<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>]</span> except at finitely many points <span class="m">ξ<sub>1</sub>, …, ξ<sub><i>k</i></sub></span>, where both one-sided limits <span class="m">lim<sub><i>t</i>→ξ<sub><i>i</i></sub><sup>±</sup></sub> <i>u</i>(<i>t</i>)</span> exist and are finite.</li>
-            <li><strong>Optimal pair (<i>x</i>*, <i>u</i>*):</strong> <span class="m"><i>J</i>(<i>u</i>*) ≥ <i>J</i>(<i>u</i>)</span> for all admissible <span class="m"><i>u</i></span> (for max; reverse to <span class="m">≤</span> for min), with <span class="m"><i>x</i>* = <i>x</i><sup><i>u</i>*</sup></span>.</li>
-          </ul>
-        `
-      },
-      {
-        id: "t1-2",
-        deck: "theory-proofs",
-        tag: "Topic 1 · Proof (Lemma)",
-        title: "Uniform Convergence of Perturbed States (MVT + Gronwall)",
-        q: `<p>For an unconstrained optimal control <span class="m"><i>u</i>*</span> and a bounded piecewise-continuous variation <span class="m"><i>h</i></span>, define <span class="m"><i>u</i><sub>ε</sub> = <i>u</i>* + ε<i>h</i></span> and <span class="m"><i>x</i><sub>ε</sub> = <i>x</i><sup><i>u</i><sub>ε</sub></sup></span>. State <strong>Gronwall's Lemma</strong> and prove that <span class="m"><i>x</i><sub>ε</sub> → <i>x</i>*</span> <strong>uniformly</strong> on <span class="m">[<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>]</span> as <span class="m">ε → 0</span>.</p>`,
-        a: `
-          <p><strong>Gronwall's Lemma:</strong> If <span class="m"><i>y</i> : [<i>t</i><sub>0</sub>, <i>T</i>) → ℝ</span> is continuous and <span class="m"><i>y</i>(<i>t</i>) ≤ α + β ${intg("<i>t</i><sub>0</sub>", "<i>t</i>")} <i>y</i>(<i>s</i>) <i>ds</i></span> with <span class="m">β ≥ 0</span>, then <span class="m"><i>y</i>(<i>t</i>) ≤ α<i>e</i><sup>β(<i>t</i>−<i>t</i><sub>0</sub>)</sup></span>.</p>
-          <p class="mt-2"><strong>Proof:</strong> Let <span class="m">|<i>h</i>(<i>t</i>)| ≤ <i>M</i></span>, so <span class="m">|<i>u</i><sub>ε</sub> − <i>u</i>*| ≤ <i>M</i>|ε|</span>. Writing the ODE in integral form and applying the Mean Value Theorem to <span class="m"><i>g</i> ∈ <i>C</i><sup>1</sup></span>:</p>
-          <div class="math-block"><i>x</i><sub>ε</sub>(<i>t</i>) − <i>x</i>*(<i>t</i>) = ${intg("<i>t</i><sub>0</sub>", "<i>t</i>")} [<i>g</i><sub><i>x</i></sub>(<i>s</i>, <i>x̄</i>, <i>ū</i>)(<i>x</i><sub>ε</sub> − <i>x</i>*) + <i>g</i><sub><i>u</i></sub>(<i>s</i>, <i>x̄</i>, <i>ū</i>)(<i>u</i><sub>ε</sub> − <i>u</i>*)] <i>ds</i>.</div>
-          <p>Since <span class="m"><i>g</i><sub><i>x</i></sub>, <i>g</i><sub><i>u</i></sub></span> are bounded by some <span class="m"><i>C</i> &gt; 0</span> on a compact neighborhood:</p>
-          <div class="math-block">|<i>x</i><sub>ε</sub>(<i>t</i>) − <i>x</i>*(<i>t</i>)| ≤ <i>CM</i>(<i>t</i><sub>1</sub> − <i>t</i><sub>0</sub>)|ε| + <i>C</i> ${intg("<i>t</i><sub>0</sub>", "<i>t</i>")} |<i>x</i><sub>ε</sub>(<i>s</i>) − <i>x</i>*(<i>s</i>)| <i>ds</i>.</div>
-          <p>By Gronwall's Lemma with <span class="m">α = <i>CM</i>(<i>t</i><sub>1</sub> − <i>t</i><sub>0</sub>)|ε|</span> and <span class="m">β = <i>C</i></span>:</p>
-          <div class="math-block">|<i>x</i><sub>ε</sub>(<i>t</i>) − <i>x</i>*(<i>t</i>)| ≤ <i>CM</i>(<i>t</i><sub>1</sub> − <i>t</i><sub>0</sub>)<i>e</i><sup><i>C</i>(<i>t</i><sub>1</sub>−<i>t</i><sub>0</sub>)</sup>|ε| &nbsp; ∀<i>t</i> ∈ [<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>] &nbsp; ⇒ &nbsp; ‖<i>x</i><sub>ε</sub> − <i>x</i>*‖<sub>∞</sub> → 0.</div>
-          <p class="text-xs text-[var(--muted-foreground)]">This uniform convergence justifies differentiating under the integral sign in the first variation.</p>
-        `
-      },
-      {
-        id: "t1-3",
-        deck: "theory-proofs",
-        tag: "Topic 1 · Full Proof",
-        title: "First-Order Necessary Optimality Conditions (Scalar Case)",
-        q: `<p>State and <strong>prove</strong> the first-order necessary optimality conditions for the unconstrained scalar problem <span class="m">max<sub><i>u</i></sub> ${intg("<i>t</i><sub>0</sub>", "<i>t</i><sub>1</sub>")} <i>f</i>(<i>t</i>, <i>x</i>, <i>u</i>) <i>dt</i></span> subject to <span class="m"><i>x</i>' = <i>g</i>(<i>t</i>, <i>x</i>, <i>u</i>)</span>, <span class="m"><i>x</i>(<i>t</i><sub>0</sub>) = <i>x</i><sub>0</sub></span>.</p>`,
-        a: `
-          <p><strong>Theorem:</strong> If <span class="m">(<i>x</i>*, <i>u</i>*)</span> is optimal, there exists a piecewise differentiable costate <span class="m">λ : [<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>] → ℝ</span> such that</p>
-          <div class="math-block"><i>f</i><sub><i>u</i></sub>(<i>t</i>, <i>x</i>*, <i>u</i>*) + λ(<i>t</i>)<i>g</i><sub><i>u</i></sub>(<i>t</i>, <i>x</i>*, <i>u</i>*) = 0, &nbsp;&nbsp; ${cases(["λ'(<i>t</i>) = −<i>f</i><sub><i>x</i></sub>(<i>t</i>, <i>x</i>*, <i>u</i>*) − λ(<i>t</i>)<i>g</i><sub><i>x</i></sub>(<i>t</i>, <i>x</i>*, <i>u</i>*)", "λ(<i>t</i><sub>1</sub>) = 0"])}</div>
+          <p><strong>Problem &amp; Theorem:</strong> Maximize (or minimize) <span class="m"><i>J</i>(<i>u</i>) = ${intg("<i>t</i><sub>0</sub>", "<i>t</i><sub>1</sub>")} <i>f</i>(<i>t</i>, <i>x</i><sup><i>u</i></sup>, <i>u</i>) <i>dt</i></span> subject to <span class="m"><i>x</i>' = <i>g</i>(<i>t</i>, <i>x</i>, <i>u</i>)</span>, <span class="m"><i>x</i>(<i>t</i><sub>0</sub>) = <i>x</i><sub>0</sub></span>, with <span class="m"><i>f</i>, <i>g</i> ∈ <i>C</i><sup>1</sup></span> and <span class="m"><i>u</i></span> piecewise continuous. If <span class="m">(<i>x</i>*, <i>u</i>*)</span> is optimal, there exists a piecewise differentiable costate <span class="m">λ : [<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>] → ℝ</span> such that, with <span class="m"><i>H</i>(<i>t</i>, <i>x</i>, <i>u</i>, λ) = <i>f</i> + λ<i>g</i></span>:</p>
+          <div class="math-block"><i>H</i><sub><i>u</i></sub>(<i>t</i>, <i>x</i>*, <i>u</i>*, λ) = <i>f</i><sub><i>u</i></sub> + λ<i>g</i><sub><i>u</i></sub> = 0, &nbsp;&nbsp; ${cases(["λ' = −<i>H</i><sub><i>x</i></sub> = −<i>f</i><sub><i>x</i></sub> − λ<i>g</i><sub><i>x</i></sub>", "λ(<i>t</i><sub>1</sub>) = 0"])} &nbsp;&nbsp; ${cases(["<i>x</i>*' = <i>H</i><sub>λ</sub> = <i>g</i>", "<i>x</i>*(<i>t</i><sub>0</sub>) = <i>x</i><sub>0</sub>"])}</div>
           <p><strong>Proof:</strong></p>
           <ol class="proof-list">
-            <li>For any bounded piecewise-continuous <span class="m"><i>h</i></span>, set <span class="m"><i>u</i><sub>ε</sub> = <i>u</i>* + ε<i>h</i></span>. Since <span class="m"><i>u</i></span> is unconstrained, <span class="m">ε ↦ <i>J</i>(<i>u</i><sub>ε</sub>)</span> has a local extremum at <span class="m">ε = 0</span>, so <span class="m">d<i>J</i>(<i>u</i><sub>ε</sub>)/dε|<sub>ε=0</sub> = 0</span>.</li>
-            <li>For any piecewise differentiable <span class="m">λ</span>, add the zero identity <span class="m">${intg("<i>t</i><sub>0</sub>", "<i>t</i><sub>1</sub>")} (λ<i>x</i><sub>ε</sub>)' <i>dt</i> − λ(<i>t</i><sub>1</sub>)<i>x</i><sub>ε</sub>(<i>t</i><sub>1</sub>) + λ(<i>t</i><sub>0</sub>)<i>x</i><sub>0</sub> = 0</span> to <span class="m"><i>J</i>(<i>u</i><sub>ε</sub>)</span> and substitute <span class="m"><i>x</i><sub>ε</sub>' = <i>g</i></span>:
+            <li><strong>Control variation &amp; uniform convergence (Gronwall):</strong> Let <span class="m"><i>h</i></span> be bounded piecewise continuous (<span class="m">|<i>h</i>| ≤ <i>M</i></span>), <span class="m"><i>u</i><sub>ε</sub> = <i>u</i>* + ε<i>h</i></span>, <span class="m"><i>x</i><sub>ε</sub> = <i>x</i><sup><i>u</i><sub>ε</sub></sup></span>. By the integral ODE and MVT on <span class="m"><i>g</i> ∈ <i>C</i><sup>1</sup></span>, <span class="m">|<i>x</i><sub>ε</sub>(<i>t</i>) − <i>x</i>*(<i>t</i>)| ≤ <i>CM</i>(<i>t</i><sub>1</sub> − <i>t</i><sub>0</sub>)|ε| + <i>C</i>${intg("<i>t</i><sub>0</sub>", "<i>t</i>")} |<i>x</i><sub>ε</sub> − <i>x</i>*| <i>ds</i></span>. By <strong>Gronwall's Lemma</strong>, <span class="m">|<i>x</i><sub>ε</sub>(<i>t</i>) − <i>x</i>*(<i>t</i>)| ≤ <i>CM</i>(<i>t</i><sub>1</sub> − <i>t</i><sub>0</sub>)<i>e</i><sup><i>C</i>(<i>t</i><sub>1</sub>−<i>t</i><sub>0</sub>)</sup>|ε|</span>, so <span class="m"><i>x</i><sub>ε</sub> → <i>x</i>*</span> uniformly (justifying differentiating under the integral).</li>
+            <li><strong>First variation:</strong> Since <span class="m"><i>u</i></span> is unconstrained, <span class="m">ε ↦ <i>J</i>(<i>u</i><sub>ε</sub>)</span> has an extremum at <span class="m">ε = 0</span>, so <span class="m">d<i>J</i>(<i>u</i><sub>ε</sub>)/dε|<sub>ε=0</sub> = 0</span>.</li>
+            <li><strong>Introduce costate λ:</strong> Add <span class="m">${intg("<i>t</i><sub>0</sub>", "<i>t</i><sub>1</sub>")} (λ<i>x</i><sub>ε</sub>)' <i>dt</i> − λ(<i>t</i><sub>1</sub>)<i>x</i><sub>ε</sub>(<i>t</i><sub>1</sub>) + λ(<i>t</i><sub>0</sub>)<i>x</i><sub>0</sub> = 0</span> to <span class="m"><i>J</i>(<i>u</i><sub>ε</sub>)</span> and substitute <span class="m"><i>x</i><sub>ε</sub>' = <i>g</i></span>:
               <div class="math-block"><i>J</i>(<i>u</i><sub>ε</sub>) = ${intg("<i>t</i><sub>0</sub>", "<i>t</i><sub>1</sub>")} [<i>f</i>(<i>t</i>, <i>x</i><sub>ε</sub>, <i>u</i><sub>ε</sub>) + λ'<i>x</i><sub>ε</sub> + λ<i>g</i>(<i>t</i>, <i>x</i><sub>ε</sub>, <i>u</i><sub>ε</sub>)] <i>dt</i> − λ(<i>t</i><sub>1</sub>)<i>x</i><sub>ε</sub>(<i>t</i><sub>1</sub>) + λ(<i>t</i><sub>0</sub>)<i>x</i><sub>0</sub>.</div>
             </li>
-            <li>Differentiate w.r.t. <span class="m">ε</span> at <span class="m">ε = 0</span> (using <span class="m">∂<sub>ε</sub><i>u</i><sub>ε</sub> = <i>h</i></span> and <span class="m">λ(<i>t</i><sub>0</sub>)<i>x</i><sub>0</sub></span> constant):
+            <li>Differentiate at <span class="m">ε = 0</span>:
               <div class="math-block">0 = ${intg("<i>t</i><sub>0</sub>", "<i>t</i><sub>1</sub>")} [(<i>f</i><sub><i>x</i></sub> + λ' + λ<i>g</i><sub><i>x</i></sub>) ∂<sub>ε</sub><i>x</i><sub>ε</sub>|<sub>0</sub> + (<i>f</i><sub><i>u</i></sub> + λ<i>g</i><sub><i>u</i></sub>)<i>h</i>] <i>dt</i> − λ(<i>t</i><sub>1</sub>) ∂<sub>ε</sub><i>x</i><sub>ε</sub>(<i>t</i><sub>1</sub>)|<sub>0</sub>.</div>
             </li>
-            <li>Choose <span class="m">λ</span> solving <span class="m">λ' = −<i>f</i><sub><i>x</i></sub> − λ<i>g</i><sub><i>x</i></sub></span> with <span class="m">λ(<i>t</i><sub>1</sub>) = 0</span>. All <span class="m">∂<sub>ε</sub><i>x</i><sub>ε</sub>|<sub>0</sub></span> terms cancel, leaving <span class="m">${intg("<i>t</i><sub>0</sub>", "<i>t</i><sub>1</sub>")} (<i>f</i><sub><i>u</i></sub> + λ<i>g</i><sub><i>u</i></sub>)<i>h</i> <i>dt</i> = 0</span> for all <span class="m"><i>h</i></span>.</li>
-            <li>Take <span class="m"><i>h</i> = <i>f</i><sub><i>u</i></sub> + λ<i>g</i><sub><i>u</i></sub></span> to get <span class="m">${intg("<i>t</i><sub>0</sub>", "<i>t</i><sub>1</sub>")} (<i>f</i><sub><i>u</i></sub> + λ<i>g</i><sub><i>u</i></sub>)<sup>2</sup> <i>dt</i> = 0</span>, hence <span class="m"><i>f</i><sub><i>u</i></sub> + λ<i>g</i><sub><i>u</i></sub> = 0</span> at continuity points (a.e.). ∎</li>
+            <li>Choose <span class="m">λ</span> solving <span class="m">λ' = −<i>f</i><sub><i>x</i></sub> − λ<i>g</i><sub><i>x</i></sub></span>, <span class="m">λ(<i>t</i><sub>1</sub>) = 0</span>. Then <span class="m">${intg("<i>t</i><sub>0</sub>", "<i>t</i><sub>1</sub>")} (<i>f</i><sub><i>u</i></sub> + λ<i>g</i><sub><i>u</i></sub>)<i>h</i> <i>dt</i> = 0</span> for all <span class="m"><i>h</i></span>. Taking <span class="m"><i>h</i> = <i>f</i><sub><i>u</i></sub> + λ<i>g</i><sub><i>u</i></sub></span> yields <span class="m"><i>f</i><sub><i>u</i></sub> + λ<i>g</i><sub><i>u</i></sub> = 0</span> at continuity points (a.e.). ∎</li>
           </ol>
+          <p class="text-xs text-[var(--muted-foreground)] mt-1"><strong>5-step scheme:</strong> (1) write <span class="m"><i>H</i><sub><i>u</i></sub>=0</span>; (2) solve <span class="m"><i>u</i>*=<i>u</i>*(<i>x</i>*,λ)</span>; (3) substitute into BVP for <span class="m">(<i>x</i>*,λ)</span>; (4) solve BVP with <span class="m"><i>x</i>*(<i>t</i><sub>0</sub>)=<i>x</i><sub>0</sub>, λ(<i>t</i><sub>1</sub>)=0</span>; (5) recover <span class="m"><i>u</i>*</span>.</p>
         `
       },
       {
-        id: "t1-4",
+        id: "g-2",
         deck: "theory-proofs",
-        tag: "Topic 1 · Scheme",
-        title: "Hamiltonian Formulation & 5-Step Reconstruction Scheme",
-        q: `<p>Write the scalar first-order necessary conditions in <strong>Hamiltonian form</strong> and state the <strong>5-step scheme</strong> for solving an unconstrained problem.</p>`,
+        tag: "G-2 · WITH PROOF (Must Memorize)",
+        title: "Pontryagin Maximum Principle: General Statement & Proof Under Concavity / Convexity",
+        q: `<p>State the general <strong>Pontryagin Maximum Principle (PMP)</strong>, and <strong>prove</strong> it under <strong>concavity</strong> assumptions in <span class="m"><i>u</i></span> (for maximization) and <strong>convexity</strong> assumptions in <span class="m"><i>u</i></span> (for minimization).</p>`,
         a: `
-          <p>Define <span class="m"><i>H</i>(<i>t</i>, <i>x</i>, <i>u</i>, λ) = <i>f</i>(<i>t</i>, <i>x</i>, <i>u</i>) + λ<i>g</i>(<i>t</i>, <i>x</i>, <i>u</i>)</span>. Then <span class="m"><i>H</i><sub><i>u</i></sub> = <i>f</i><sub><i>u</i></sub> + λ<i>g</i><sub><i>u</i></sub></span>, <span class="m"><i>H</i><sub><i>x</i></sub> = <i>f</i><sub><i>x</i></sub> + λ<i>g</i><sub><i>x</i></sub></span>, <span class="m"><i>H</i><sub>λ</sub> = <i>g</i></span>:</p>
-          <div class="math-block"><i>H</i><sub><i>u</i></sub>(<i>t</i>, <i>x</i>*, <i>u</i>*, λ) = 0, &nbsp;&nbsp; ${cases(["λ' = −<i>H</i><sub><i>x</i></sub>(<i>t</i>, <i>x</i>*, <i>u</i>*, λ)", "λ(<i>t</i><sub>1</sub>) = 0"])} &nbsp;&nbsp; ${cases(["<i>x</i>*' = <i>H</i><sub>λ</sub>(<i>t</i>, <i>x</i>*, <i>u</i>*, λ)", "<i>x</i>*(<i>t</i><sub>0</sub>) = <i>x</i><sub>0</sub>"])}</div>
-          <ol class="proof-list">
-            <li>Write <span class="m"><i>H</i><sub><i>u</i></sub> = 0</span> at <span class="m">(<i>x</i>*, <i>u</i>*)</span>.</li>
-            <li>Solve algebraically for <span class="m"><i>u</i>* = <i>u</i>*(<i>x</i>*, λ)</span>.</li>
-            <li>Substitute <span class="m"><i>u</i>*(<i>x</i>*, λ)</span> into the coupled BVP for <span class="m"><i>x</i>*, λ</span> with <span class="m"><i>x</i>*(<i>t</i><sub>0</sub>)=<i>x</i><sub>0</sub></span> and <span class="m">λ(<i>t</i><sub>1</sub>)=0</span>.</li>
-            <li>Solve the two-point BVP for <span class="m">(<i>x</i>*, λ)</span> (analytically or numerically).</li>
-            <li>Recover <span class="m"><i>u</i>*</span> from <span class="m"><i>u</i>*(<i>x</i>*, λ)</span>.</li>
-          </ol>
-        `
-      },
-      {
-        id: "t2-1",
-        deck: "theory-proofs",
-        tag: "Topic 2 · General Statement",
-        title: "Pontryagin Maximum Principle (General Statement)",
-        q: `<p>State the general <strong>Pontryagin Maximum Principle (PMP)</strong> for maximization, and note how the inequality changes for minimization under <span class="m"><i>H</i> = <i>f</i> + λ<i>g</i></span>.</p>`,
-        a: `
-          <p><strong>Theorem (PMP — Maximization):</strong> Let <span class="m"><i>f</i>, <i>g</i> ∈ <i>C</i><sup>1</sup></span>. If <span class="m">(<i>x</i>*, <i>u</i>*)</span> is an optimal pair (<span class="m"><i>x</i>* = <i>x</i><sup><i>u</i>*</sup></span>), then there exists a piecewise differentiable adjoint <span class="m">λ : [<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>] → ℝ</span> (solving <span class="m">λ' = −<i>H</i><sub><i>x</i></sub></span>, <span class="m">λ(<i>t</i><sub>1</sub>) = 0</span>) such that</p>
-          <div class="math-block"><i>H</i>(<i>t</i>, <i>x</i>*(<i>t</i>), <i>u</i>(<i>t</i>), λ(<i>t</i>)) ≤ <i>H</i>(<i>t</i>, <i>x</i>*(<i>t</i>), <i>u</i>*(<i>t</i>), λ(<i>t</i>))</div>
-          <p>for all admissible controls <span class="m"><i>u</i></span> (pointwise / a.e.), where <span class="m"><i>H</i>(<i>t</i>, <i>x</i>, <i>u</i>, λ) = <i>f</i>(<i>t</i>, <i>x</i>, <i>u</i>) + λ<i>g</i>(<i>t</i>, <i>x</i>, <i>u</i>)</span>.</p>
-          <p class="mt-2"><strong>Minimization version:</strong> Under the same <span class="m"><i>H</i> = <i>f</i> + λ<i>g</i></span>, the inequality reverses: <span class="m"><i>H</i>(<i>t</i>, <i>x</i>*, <i>u</i>*, λ) ≤ <i>H</i>(<i>t</i>, <i>x</i>*, <i>u</i>, λ)</span>.</p>
-        `
-      },
-      {
-        id: "t2-2",
-        deck: "theory-proofs",
-        tag: "Topic 2 · Full Proof",
-        title: "Proof of PMP Under Concavity (Max) / Convexity (Min)",
-        q: `<p>State the exact hypotheses and <strong>prove the Pontryagin Maximum Principle</strong> under concavity assumptions w.r.t. <span class="m"><i>u</i></span> (for maximization), and explain the convexity version for minimization.</p>`,
-        a: `
-          <p><strong>Theorem (Particular case):</strong> Let <span class="m"><i>f</i>, <i>g</i> ∈ <i>C</i><sup>1</sup></span> be <strong>concave w.r.t. <i>u</i></strong>. Let <span class="m">(<i>x</i>*, <i>u</i>*)</span> be optimal and <span class="m">λ</span> piecewise differentiable with <span class="m"><i>H</i><sub><i>u</i></sub>(<i>t</i>, <i>x</i>*, <i>u</i>*, λ) = 0</span> and <strong><span class="m">λ(<i>t</i>) ≥ 0</span></strong>. Then <span class="m"><i>H</i>(<i>t</i>, <i>x</i>*, <i>u</i>, λ) ≤ <i>H</i>(<i>t</i>, <i>x</i>*, <i>u</i>*, λ)</span>.</p>
-          <p class="mt-2"><strong>Proof (Maximization):</strong> For a <span class="m"><i>C</i><sup>1</sup></span> concave function, <span class="m"><i>h</i>(<i>u</i>) ≤ <i>h</i>(<i>u</i>*) + <i>h</i>'(<i>u</i>*)(<i>u</i> − <i>u</i>*)</span>, i.e., <span class="m"><i>h</i>(<i>u</i>*) − <i>h</i>(<i>u</i>) ≥ <i>h</i>'(<i>u</i>*)(<i>u</i>* − <i>u</i>)</span>. Applying this in <span class="m"><i>u</i></span> to <span class="m"><i>f</i></span> and <span class="m"><i>g</i></span>:</p>
+          <p><strong>Theorem (General PMP — Maximization):</strong> Let <span class="m"><i>f</i>, <i>g</i> ∈ <i>C</i><sup>1</sup></span> and let <span class="m">(<i>x</i>*, <i>u</i>*)</span> be optimal (with <span class="m"><i>u</i></span> taking values in <span class="m"><i>U</i> ⊆ ℝ</span>). Then there exists a piecewise differentiable <span class="m">λ : [<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>] → ℝ</span> such that, with <span class="m"><i>H</i>(<i>t</i>, <i>x</i>, <i>u</i>, λ) = <i>f</i> + λ<i>g</i></span>:</p>
+          <ul class="bullet-list">
+            <li>(i) <span class="m"><i>x</i>*' = <i>H</i><sub>λ</sub> = <i>g</i>(<i>t</i>, <i>x</i>*, <i>u</i>*)</span>, &nbsp; <span class="m"><i>x</i>*(<i>t</i><sub>0</sub>) = <i>x</i><sub>0</sub></span>;</li>
+            <li>(ii) <span class="m">λ' = −<i>H</i><sub><i>x</i></sub>(<i>t</i>, <i>x</i>*, <i>u</i>*, λ)</span>, &nbsp; <span class="m">λ(<i>t</i><sub>1</sub>) = 0</span>;</li>
+            <li>(iii) <span class="m"><i>H</i>(<i>t</i>, <i>x</i>*(<i>t</i>), <i>v</i>, λ(<i>t</i>)) ≤ <i>H</i>(<i>t</i>, <i>x</i>*(<i>t</i>), <i>u</i>*(<i>t</i>), λ(<i>t</i>))</span> for all <span class="m"><i>v</i> ∈ <i>U</i></span> (at continuity points of <span class="m"><i>u</i>*</span>). <em>(For minimization with <span class="m"><i>H</i>=<i>f</i>+λ<i>g</i></span>, reverse the inequality: <span class="m"><i>H</i>* ≤ <i>H</i></span>.)</em></li>
+          </ul>
+          <p class="mt-2"><strong>Proof under concavity (Maximization):</strong> Assume <span class="m"><i>f</i>, <i>g</i> ∈ <i>C</i><sup>1</sup></span> are <strong>concave w.r.t. <i>u</i></strong>, <span class="m"><i>H</i><sub><i>u</i></sub>(<i>t</i>, <i>x</i>*, <i>u</i>*, λ) = 0</span> (by G-1), and <strong><span class="m">λ(<i>t</i>) ≥ 0</span></strong> (no sign needed if <span class="m"><i>g</i></span> is affine in <span class="m"><i>u</i></span>). Since a <span class="m"><i>C</i><sup>1</sup></span> concave function lies below its tangent line:</p>
           <div class="math-block"><i>f</i>(…, <i>u</i>*) − <i>f</i>(…, <i>u</i>) ≥ <i>f</i><sub><i>u</i></sub>(…, <i>u</i>*)(<i>u</i>* − <i>u</i>), &nbsp;&nbsp; <i>g</i>(…, <i>u</i>*) − <i>g</i>(…, <i>u</i>) ≥ <i>g</i><sub><i>u</i></sub>(…, <i>u</i>*)(<i>u</i>* − <i>u</i>).</div>
-          <p>Since <strong><span class="m">λ(<i>t</i>) ≥ 0</span></strong>, multiply the second inequality by <span class="m">λ</span> and add:</p>
+          <p>Multiply the second inequality by <span class="m">λ(<i>t</i>) ≥ 0</span> and add:</p>
           <div class="math-block"><i>H</i>(…, <i>u</i>*) − <i>H</i>(…, <i>u</i>) = [<i>f</i>* − <i>f</i>] + λ[<i>g</i>* − <i>g</i>] ≥ (<i>f</i><sub><i>u</i></sub>* + λ<i>g</i><sub><i>u</i></sub>*)(<i>u</i>* − <i>u</i>) = <i>H</i><sub><i>u</i></sub>*(<i>u</i>* − <i>u</i>) = 0. ∎</div>
-          <p class="mt-2"><strong>Minimization (Convexity):</strong> Assume <span class="m"><i>f</i>, <i>g</i></span> are <strong>convex w.r.t. <i>u</i></strong> and <span class="m">λ(<i>t</i>) ≥ 0</span>. Then <span class="m"><i>f</i>* − <i>f</i> ≤ <i>f</i><sub><i>u</i></sub>*(<i>u</i>* − <i>u</i>)</span> and <span class="m"><i>g</i>* − <i>g</i> ≤ <i>g</i><sub><i>u</i></sub>*(<i>u</i>* − <i>u</i>)</span>, so <span class="m"><i>H</i>* − <i>H</i> ≤ <i>H</i><sub><i>u</i></sub>*(<i>u</i>* − <i>u</i>) = 0</span>, giving <span class="m"><i>H</i>* ≤ <i>H</i></span>.</p>
+          <p class="mt-1"><strong>Minimization (Convexity):</strong> Assume <span class="m"><i>f</i>, <i>g</i></span> are <strong>convex w.r.t. <i>u</i></strong> and <span class="m">λ(<i>t</i>) ≥ 0</span>. Both tangent inequalities reverse, giving <span class="m"><i>H</i>* − <i>H</i> ≤ <i>H</i><sub><i>u</i></sub>*(<i>u</i>* − <i>u</i>) = 0 ⇒ <i>H</i>* ≤ <i>H</i></span>.</p>
         `
       },
       {
-        id: "t3-1",
+        id: "g-3",
         deck: "theory-proofs",
-        tag: "Topic 3 · Full Proof",
-        title: "Theorem with Sufficient Conditions for Optimality (Maximization)",
-        q: `<p>State and <strong>prove</strong> the theorem giving <strong>sufficient conditions for global optimality</strong> in the scalar maximization problem.</p>`,
+        tag: "G-3 · WITH PROOF",
+        title: "Theorem with Sufficient Conditions for Optimality",
+        q: `<p>State and <strong>prove</strong> the theorem giving <strong>sufficient conditions for global optimality</strong> (maximization under joint concavity in <span class="m">(<i>x</i>, <i>u</i>)</span>, and note the minimization version under joint convexity).</p>`,
         a: `
-          <p><strong>Theorem:</strong> Let <span class="m"><i>f</i>, <i>g</i> ∈ <i>C</i><sup>1</sup></span> be <strong>jointly concave in (<i>x</i>, <i>u</i>)</strong>. Let <span class="m">(<i>x</i>*, <i>u</i>*)</span> be admissible and suppose there exists a piecewise differentiable <span class="m">λ</span> satisfying</p>
-          <div class="math-block">${cases(["<i>H</i><sub><i>u</i></sub>(<i>t</i>, <i>x</i>*, <i>u</i>*, λ) = 0", "λ' = −<i>H</i><sub><i>x</i></sub>(<i>t</i>, <i>x</i>*, <i>u</i>*, λ)", "λ(<i>t</i><sub>1</sub>) = 0, &nbsp; λ(<i>t</i>) ≥ 0"])}</div>
+          <p><strong>Theorem (Sufficient conditions — Maximization):</strong> Let <span class="m"><i>f</i>, <i>g</i> ∈ <i>C</i><sup>1</sup></span> be <strong>jointly concave in (<i>x</i>, <i>u</i>)</strong>. Let <span class="m">(<i>x</i>*, <i>u</i>*)</span> be admissible and suppose there exists a piecewise differentiable <span class="m">λ</span> satisfying</p>
+          <div class="math-block">${cases(["<i>H</i><sub><i>u</i></sub>(<i>t</i>, <i>x</i>*, <i>u</i>*, λ) = 0", "λ' = −<i>H</i><sub><i>x</i></sub>(<i>t</i>, <i>x</i>*, <i>u</i>*, λ)", "λ(<i>t</i><sub>1</sub>) = 0, &nbsp; λ(<i>t</i>) ≥ 0 &nbsp; (no sign needed if <i>g</i> is affine in (<i>x</i>, <i>u</i>))"])}</div>
           <p>Then <span class="m"><i>J</i>(<i>u</i>*) ≥ <i>J</i>(<i>u</i>)</span> for every admissible control <span class="m"><i>u</i></span>.</p>
           <p class="mt-2"><strong>Proof:</strong> For any admissible <span class="m">(<i>x</i>, <i>u</i>)</span>:</p>
           <ol class="proof-list">
             <li>By joint concavity of <span class="m"><i>f</i></span> in <span class="m">(<i>x</i>, <i>u</i>)</span>:
               <div class="math-block"><i>J</i>(<i>u</i>*) − <i>J</i>(<i>u</i>) = ${intg("<i>t</i><sub>0</sub>", "<i>t</i><sub>1</sub>")} (<i>f</i>* − <i>f</i>) <i>dt</i> ≥ ${intg("<i>t</i><sub>0</sub>", "<i>t</i><sub>1</sub>")} [<i>f</i><sub><i>x</i></sub>*(<i>x</i>* − <i>x</i>) + <i>f</i><sub><i>u</i></sub>*(<i>u</i>* − <i>u</i>)] <i>dt</i>.</div>
             </li>
-            <li>Substitute <span class="m"><i>f</i><sub><i>u</i></sub>* = −λ<i>g</i><sub><i>u</i></sub>*</span> and <span class="m"><i>f</i><sub><i>x</i></sub>* = −λ' − λ<i>g</i><sub><i>x</i></sub>*</span>:
+            <li>Substitute <span class="m"><i>f</i><sub><i>u</i></sub>* = −λ<i>g</i><sub><i>u</i></sub>*</span> (from <span class="m"><i>H</i><sub><i>u</i></sub>* = 0</span>) and <span class="m"><i>f</i><sub><i>x</i></sub>* = −λ' − λ<i>g</i><sub><i>x</i></sub>*</span> (from <span class="m">λ' = −<i>H</i><sub><i>x</i></sub>*</span>):
               <div class="math-block"><i>J</i>(<i>u</i>*) − <i>J</i>(<i>u</i>) ≥ ${intg("<i>t</i><sub>0</sub>", "<i>t</i><sub>1</sub>")} [−λ'(<i>x</i>* − <i>x</i>) − λ(<i>g</i><sub><i>x</i></sub>*(<i>x</i>* − <i>x</i>) + <i>g</i><sub><i>u</i></sub>*(<i>u</i>* − <i>u</i>))] <i>dt</i>.</div>
             </li>
             <li>Integrate <span class="m">−λ'(<i>x</i>* − <i>x</i>)</span> by parts; boundary terms vanish since <span class="m">λ(<i>t</i><sub>1</sub>) = 0</span> and <span class="m"><i>x</i>*(<i>t</i><sub>0</sub>) = <i>x</i>(<i>t</i><sub>0</sub>) = <i>x</i><sub>0</sub></span>:
@@ -605,82 +548,37 @@
             </li>
             <li>Combine:
               <div class="math-block"><i>J</i>(<i>u</i>*) − <i>J</i>(<i>u</i>) ≥ ${intg("<i>t</i><sub>0</sub>", "<i>t</i><sub>1</sub>")} λ(<i>t</i>)[<i>g</i>* − <i>g</i> − <i>g</i><sub><i>x</i></sub>*(<i>x</i>* − <i>x</i>) − <i>g</i><sub><i>u</i></sub>*(<i>u</i>* − <i>u</i>)] <i>dt</i> ≥ 0,</div>
-              because the bracket is <span class="m">≥ 0</span> by joint concavity of <span class="m"><i>g</i></span> and <span class="m">λ(<i>t</i>) ≥ 0</span>. ∎
+              since the bracket is <span class="m">≥ 0</span> by joint concavity of <span class="m"><i>g</i></span> and <span class="m">λ(<i>t</i>) ≥ 0</span>. ∎
             </li>
           </ol>
+          <p class="text-xs text-[var(--muted-foreground)] mt-1"><strong>Minimization version:</strong> Replace concavity with <strong>joint convexity</strong> of <span class="m"><i>f</i>, <i>g</i></span> in <span class="m">(<i>x</i>, <i>u</i>)</span> (with <span class="m">λ ≥ 0</span>); every inequality reverses to give <span class="m"><i>J</i>(<i>u</i>*) ≤ <i>J</i>(<i>u</i>)</span>. <em>Key difference from G-2:</em> G-2 only needs concavity in <span class="m"><i>u</i></span>; G-3 needs joint concavity in <span class="m">(<i>x</i>, <i>u</i>)</span>.</p>
         `
       },
       {
-        id: "t3-2",
+        id: "g-4",
         deck: "theory-proofs",
-        tag: "Topic 3 · Minimization & Comparison",
-        title: "Sufficiency for Minimization vs. PMP Hypotheses",
-        q: `<p>How does the sufficient conditions theorem change for <strong>minimization</strong>, and what is the crucial difference between the convexity/concavity hypotheses in <strong>Topic 2 (PMP)</strong> vs. <strong>Topic 3 (Sufficiency)</strong>?</p>`,
+        tag: "G-4 · WITH PROOF",
+        title: "Dynamic Programming Principle (Principle of Optimality, Uniqueness & Value Function)",
+        q: `<p>State and <strong>prove</strong> the <strong>Dynamic Programming Principle</strong>: (1) optimality of the restriction <span class="m">(<i>x</i>*|<sub>[<i>t̂</i>, <i>t</i><sub>1</sub>]</sub>, <i>u</i>*|<sub>[<i>t̂</i>, <i>t</i><sub>1</sub>]</sub>)</span> and its uniqueness, (2) why restriction to <span class="m">[<i>t</i><sub>0</sub>, <i>t̂</i>]</span> fails, and (3) the value-function formulation <span class="m"><i>V</i>(<i>t</i>, <i>x</i>)</span>.</p>`,
         a: `
-          <ul class="bullet-list">
-            <li><strong>Minimization version:</strong> Assume <span class="m"><i>f</i>, <i>g</i> ∈ <i>C</i><sup>1</sup></span> are <strong>jointly convex in (<i>x</i>, <i>u</i>)</strong> and <span class="m">λ(<i>t</i>) ≥ 0</span>. Every inequality in the proof reverses, giving <span class="m"><i>J</i>(<i>u</i>*) − <i>J</i>(<i>u</i>) ≤ 0</span>.</li>
-            <li><strong>Topic 2 vs. Topic 3:</strong>
-              <ul class="bullet-list">
-                <li><strong>PMP proof (Topic 2):</strong> only requires concavity/convexity <strong>in <i>u</i> alone</strong>, because <span class="m"><i>x</i>*</span> is held fixed in <span class="m"><i>H</i>(<i>t</i>, <i>x</i>*, <i>u</i>, λ)</span>.</li>
-                <li><strong>Sufficiency (Topic 3):</strong> requires <strong>joint concavity/convexity in (<i>x</i>, <i>u</i>)</strong>, because competing controls <span class="m"><i>u</i></span> generate different state trajectories <span class="m"><i>x</i> ≠ <i>x</i>*</span>.</li>
-              </ul>
-            </li>
-          </ul>
-        `
-      },
-      {
-        id: "t4-1",
-        deck: "theory-proofs",
-        tag: "Topic 4 · Full Proof",
-        title: "Dynamic Programming Principle (Principle of Optimality)",
-        q: `<p>State and <strong>prove</strong> the <strong>Dynamic Programming Principle</strong> for restricting an optimal pair <span class="m">(<i>x</i>*, <i>u</i>*)</span> on <span class="m">[<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>]</span> to a terminal subinterval <span class="m">[<i>t̂</i>, <i>t</i><sub>1</sub>]</span>.</p>`,
-        a: `
-          <p><strong>Theorem:</strong> If <span class="m">(<i>x</i>*, <i>u</i>*)</span> is optimal for <span class="m">(P)</span> on <span class="m">[<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>]</span> and <span class="m"><i>t̂</i> ∈ (<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>)</span>, then <span class="m">(<i>x</i>*|<sub>[<i>t̂</i>, <i>t</i><sub>1</sub>]</sub>, <i>u</i>*|<sub>[<i>t̂</i>, <i>t</i><sub>1</sub>]</sub>)</span> is optimal for the reduced problem <span class="m">(P̂)</span>:</p>
-          <div class="math-block">max<sub><i>u</i></sub> <i>Ĵ</i>(<i>u</i>) = ${intg("<i>t̂</i>", "<i>t</i><sub>1</sub>")} <i>f</i>(<i>t</i>, <i>x</i><sup><i>u</i></sup>, <i>u</i>) <i>dt</i> &nbsp; subject to &nbsp; ${cases(["<i>x</i>' = <i>g</i>(<i>t</i>, <i>x</i>, <i>u</i>)", "<i>x</i>(<i>t̂</i>) = <i>x</i>*(<i>t̂</i>)"])}</div>
-          <p><strong>Proof (by contradiction &amp; splicing):</strong></p>
-          <ol class="proof-list">
-            <li>Suppose the restriction is not optimal for <span class="m">(P̂)</span>. Then there exists an admissible <span class="m"><i>û</i> : [<i>t̂</i>, <i>t</i><sub>1</sub>] → ℝ</span> with <span class="m"><i>Ĵ</i>(<i>û</i>) &gt; <i>Ĵ</i>(<i>u</i>*|<sub>[<i>t̂</i>, <i>t</i><sub>1</sub>]</sub>)</span>.</li>
-            <li>Define the spliced control on <span class="m">[<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>]</span>:
-              <div class="math-block"><i>û</i><sub>1</sub>(<i>t</i>) = ${cases(["<i>u</i>*(<i>t</i>), &nbsp; <i>t</i> ∈ [<i>t</i><sub>0</sub>, <i>t̂</i>)", "<i>û</i>(<i>t</i>), &nbsp;&nbsp;&nbsp; <i>t</i> ∈ [<i>t̂</i>, <i>t</i><sub>1</sub>]"])}</div>
-            </li>
-            <li>Then <span class="m"><i>û</i><sub>1</sub></span> is piecewise continuous (admissible), <span class="m"><i>x</i><sup><i>û</i><sub>1</sub></sup> = <i>x</i>*</span> on <span class="m">[<i>t</i><sub>0</sub>, <i>t̂</i>]</span>, and <span class="m"><i>x</i><sup><i>û</i><sub>1</sub></sup> = <i>x</i><sup><i>û</i></sup></span> on <span class="m">[<i>t̂</i>, <i>t</i><sub>1</sub>]</span>.</li>
-            <li>Compute the difference (the integrals on <span class="m">[<i>t</i><sub>0</sub>, <i>t̂</i>]</span> cancel):
-              <div class="math-block"><i>J</i>(<i>û</i><sub>1</sub>) − <i>J</i>(<i>u</i>*) = <i>Ĵ</i>(<i>û</i>) − <i>Ĵ</i>(<i>u</i>*|<sub>[<i>t̂</i>, <i>t</i><sub>1</sub>]</sub>) &gt; 0,</div>
-              contradicting optimality of <span class="m"><i>u</i>*</span> for <span class="m">(P)</span>. ∎
-            </li>
-          </ol>
-        `
-      },
-      {
-        id: "t4-2",
-        deck: "theory-proofs",
-        tag: "Topic 4 · Full Proof",
-        title: "Uniqueness Passes to the Restricted Problem",
-        q: `<p>State and <strong>prove</strong> the uniqueness theorem for the Dynamic Programming Principle: if <span class="m"><i>u</i>*</span> is the <strong>unique</strong> optimal control for <span class="m">(P)</span>, what can be said about <span class="m"><i>u</i>*|<sub>[<i>t̂</i>, <i>t</i><sub>1</sub>]</sub></span> for <span class="m">(P̂)</span>?</p>`,
-        a: `
-          <p><strong>Theorem:</strong> If <span class="m"><i>u</i>*</span> is the unique optimal control for <span class="m">(P)</span>, then <span class="m"><i>u</i>*|<sub>[<i>t̂</i>, <i>t</i><sub>1</sub>]</sub></span> is the <strong>unique</strong> optimal control for <span class="m">(P̂)</span>.</p>
-          <p class="mt-2"><strong>Proof:</strong> By contradiction, suppose <span class="m">(P̂)</span> admits another optimal control <span class="m"><i>û</i> ≠ <i>u</i>*|<sub>[<i>t̂</i>, <i>t</i><sub>1</sub>]</sub></span>, so <span class="m"><i>Ĵ</i>(<i>û</i>) = <i>Ĵ</i>(<i>u</i>*|<sub>[<i>t̂</i>, <i>t</i><sub>1</sub>]</sub>)</span>. Define the spliced control <span class="m"><i>û</i><sub>1</sub></span> equal to <span class="m"><i>u</i>*</span> on <span class="m">[<i>t</i><sub>0</sub>, <i>t̂</i>)</span> and <span class="m"><i>û</i></span> on <span class="m">[<i>t̂</i>, <i>t</i><sub>1</sub>]</span>. Then <span class="m"><i>û</i><sub>1</sub> ≠ <i>u</i>*</span>, yet</p>
-          <div class="math-block"><i>J</i>(<i>û</i><sub>1</sub>) − <i>J</i>(<i>u</i>*) = <i>Ĵ</i>(<i>û</i>) − <i>Ĵ</i>(<i>u</i>*|<sub>[<i>t̂</i>, <i>t</i><sub>1</sub>]</sub>) = 0 &nbsp; ⇒ &nbsp; <i>J</i>(<i>û</i><sub>1</sub>) = <i>J</i>(<i>u</i>*),</div>
-          <p>contradicting uniqueness of <span class="m"><i>u</i>*</span> for <span class="m">(P)</span>. ∎</p>
-        `
-      },
-      {
-        id: "t4-3",
-        deck: "theory-proofs",
-        tag: "Topic 4 · Key Remark",
-        title: "Why Restriction to [t₀, t̂] Fails",
-        q: `<p>Does the Dynamic Programming Principle hold if we restrict <span class="m">(<i>x</i>*, <i>u</i>*)</span> to the <strong>initial</strong> interval <span class="m">[<i>t</i><sub>0</sub>, <i>t̂</i>]</span> (with <span class="m"><i>x</i>(<i>t̂</i>)</span> free)? Explain why.</p>`,
-        a: `
-          <p><strong>No!</strong> On <span class="m">[<i>t</i><sub>0</sub>, <i>t̂</i>]</span> with free terminal state, the adjoint must satisfy the new transversality condition <strong><span class="m">λ(<i>t̂</i>) = 0</span></strong>, whereas for the full problem on <span class="m">[<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>]</span> we have <span class="m">λ(<i>t</i><sub>1</sub>) = 0</span> and generally <span class="m">λ(<i>t̂</i>) ≠ 0</span>.</p>
-          <p class="mt-2">Intuitively, on <span class="m">[<i>t</i><sub>0</sub>, <i>t̂</i>]</span> the controller no longer cares about setting up a favorable state <span class="m"><i>x</i>(<i>t̂</i>)</span> for the future interval <span class="m">[<i>t̂</i>, <i>t</i><sub>1</sub>]</span>.</p>
+          <p><strong>1. Principle of Optimality (Restriction to [<i>t̂</i>, <i>t</i><sub>1</sub>]):</strong> If <span class="m">(<i>x</i>*, <i>u</i>*)</span> is optimal for <span class="m">(P)</span> on <span class="m">[<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>]</span> and <span class="m"><i>t̂</i> ∈ (<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>)</span>, then <span class="m">(<i>x</i>*|<sub>[<i>t̂</i>, <i>t</i><sub>1</sub>]</sub>, <i>u</i>*|<sub>[<i>t̂</i>, <i>t</i><sub>1</sub>]</sub>)</span> is optimal for <span class="m">(P̂)</span>: <span class="m">max<sub><i>u</i></sub> <i>Ĵ</i>(<i>u</i>) = ${intg("<i>t̂</i>", "<i>t</i><sub>1</sub>")} <i>f</i>(<i>t</i>, <i>x</i><sup><i>u</i></sup>, <i>u</i>) <i>dt</i></span> subject to <span class="m"><i>x</i>' = <i>g</i>(<i>t</i>, <i>x</i>, <i>u</i>)</span>, <span class="m"><i>x</i>(<i>t̂</i>) = <i>x</i>*(<i>t̂</i>)</span>.</p>
+          <p class="mt-1"><strong>Proof (splicing):</strong> Suppose not; then ∃ admissible <span class="m"><i>û</i></span> on <span class="m">[<i>t̂</i>, <i>t</i><sub>1</sub>]</span> with <span class="m"><i>Ĵ</i>(<i>û</i>) &gt; <i>Ĵ</i>(<i>u</i>*|<sub>[<i>t̂</i>, <i>t</i><sub>1</sub>]</sub>)</span>. Define the spliced control</p>
+          <div class="math-block"><i>û</i><sub>1</sub>(<i>t</i>) = ${cases(["<i>u</i>*(<i>t</i>), &nbsp; <i>t</i> ∈ [<i>t</i><sub>0</sub>, <i>t̂</i>)", "<i>û</i>(<i>t</i>), &nbsp;&nbsp;&nbsp; <i>t</i> ∈ [<i>t̂</i>, <i>t</i><sub>1</sub>]"])}</div>
+          <p>Then <span class="m"><i>x</i><sup><i>û</i><sub>1</sub></sup> = <i>x</i>*</span> on <span class="m">[<i>t</i><sub>0</sub>, <i>t̂</i>]</span> and <span class="m"><i>x</i><sup><i>û</i><sub>1</sub></sup> = <i>x</i><sup><i>û</i></sup></span> on <span class="m">[<i>t̂</i>, <i>t</i><sub>1</sub>]</span>, so the integrals on <span class="m">[<i>t</i><sub>0</sub>, <i>t̂</i>]</span> cancel:</p>
+          <div class="math-block"><i>J</i>(<i>û</i><sub>1</sub>) − <i>J</i>(<i>u</i>*) = <i>Ĵ</i>(<i>û</i>) − <i>Ĵ</i>(<i>u</i>*|<sub>[<i>t̂</i>, <i>t</i><sub>1</sub>]</sub>) &gt; 0,</div>
+          <p>contradicting optimality of <span class="m"><i>u</i>*</span>. <strong>Uniqueness:</strong> if <span class="m"><i>u</i>*</span> is unique for <span class="m">(P)</span> and <span class="m"><i>û</i> ≠ <i>u</i>*|<sub>[<i>t̂</i>, <i>t</i><sub>1</sub>]</sub></span> achieves the same value <span class="m"><i>Ĵ</i></span>, then <span class="m"><i>J</i>(<i>û</i><sub>1</sub>) = <i>J</i>(<i>u</i>*)</span> gives a second distinct optimal control for <span class="m">(P)</span>, contradiction. ∎</p>
+          <p class="mt-2"><strong>2. Why [<i>t</i><sub>0</sub>, <i>t̂</i>] fails:</strong> A free-endpoint problem on <span class="m">[<i>t</i><sub>0</sub>, <i>t̂</i>]</span> requires <span class="m">λ(<i>t̂</i>) = 0</span>, whereas the full problem has <span class="m">λ(<i>t</i><sub>1</sub>) = 0</span> and generally <span class="m">λ(<i>t̂</i>) ≠ 0</span>.</p>
+          <p class="mt-2"><strong>3. Value-function DPP:</strong> For <span class="m"><i>V</i>(<i>t</i>, <i>x</i>) = sup<sub><i>u</i></sub> ${intg("<i>t</i>", "<i>t</i><sub>1</sub>")} <i>f</i>(<i>s</i>, <i>y</i>, <i>u</i>) <i>ds</i></span> (<span class="m"><i>y</i>(<i>t</i>)=<i>x</i></span>) and <span class="m"><i>t</i> ≤ τ ≤ <i>t</i><sub>1</sub></span>:</p>
+          <div class="math-block"><i>V</i>(<i>t</i>, <i>x</i>) = sup<sub><i>u</i></sub> { ${intg("<i>t</i>", "τ")} <i>f</i>(<i>s</i>, <i>y</i>, <i>u</i>) <i>ds</i> + <i>V</i>(τ, <i>y</i>(τ)) }.</div>
+          <p class="text-xs text-[var(--muted-foreground)]">Proof: (<span class="m">≤</span>) split <span class="m">${intg("<i>t</i>", "τ")} + ${intg("τ", "<i>t</i><sub>1</sub>")} ≤ ${intg("<i>t</i>", "τ")} + <i>V</i>(τ, <i>y</i>(τ))</span>; (<span class="m">≥</span>) splice any <span class="m"><i>u</i><sub>1</sub></span> on <span class="m">[<i>t</i>, τ]</span> with an ε-optimal <span class="m"><i>u</i><sub>2</sub></span> from <span class="m">(τ, <i>y</i>(τ))</span> and let <span class="m">ε → 0</span>. <em>(If time: letting τ ↓ t gives HJB <span class="m">−<i>V</i><sub><i>t</i></sub> = sup<sub><i>v</i></sub>{<i>f</i> + <i>V</i><sub><i>x</i></sub><i>g</i>}</span>.)</em></p>
         `
       },
 
-      // ==================== THEORY: TOPICS 5-8 (NO PROOF) ====================
+      // ==================== PIGNOTTI THEORY: NO PROOF (G-5 TO G-8) ====================
       {
         id: "t5-1",
         deck: "theory-noproof",
-        tag: "Topic 5 · No Proof",
+        tag: "G-5 · NO PROOF",
         title: "Lipschitz Continuity of the Hamiltonian",
         q: `<p>State the theorem on <strong>Lipschitz continuity of the Hamiltonian</strong> along an optimal pair <span class="m">(<i>x</i>*, <i>u</i>*)</span>.</p>`,
         a: `
@@ -692,12 +590,12 @@
       {
         id: "t6-1",
         deck: "theory-noproof",
-        tag: "Topic 6 · No Proof",
+        tag: "G-6 · NO PROOF",
         title: "Autonomous Case: Constancy of the Hamiltonian",
         q: `<p>What is an <strong>autonomous</strong> optimal control problem, and what theorem holds for <span class="m"><i>H̃</i>(<i>t</i>)</span> along optimal pairs?</p>`,
         a: `
           <p>A problem is <strong>autonomous</strong> when <span class="m"><i>f</i> = <i>f</i>(<i>x</i>, <i>u</i>)</span> and <span class="m"><i>g</i> = <i>g</i>(<i>x</i>, <i>u</i>)</span> do not depend explicitly on <span class="m"><i>t</i></span> (so <span class="m"><i>H</i><sub><i>t</i></sub> ≡ 0</span>).</p>
-          <p class="mt-2"><strong>Theorem:</strong> Along any optimal pair <span class="m">(<i>x</i>*, <i>u</i>*)</span> with costate <span class="m">λ</span> (under the regularity and PMP hypotheses of Topic 5), the Hamiltonian is <strong>constant</strong>:</p>
+          <p class="mt-2"><strong>Theorem:</strong> Along any optimal pair <span class="m">(<i>x</i>*, <i>u</i>*)</span> with costate <span class="m">λ</span> (under the regularity and PMP hypotheses of G-5), the Hamiltonian is <strong>constant</strong>:</p>
           <div class="math-block"><i>H̃</i>(<i>t</i>) = <i>H</i>(<i>x</i>*(<i>t</i>), <i>u</i>*(<i>t</i>), λ(<i>t</i>)) = <i>c</i> &nbsp;&nbsp; ∀<i>t</i> ∈ [<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>].</div>
           <p class="text-xs text-[var(--muted-foreground)]">Intuition: <span class="m">d<i>H̃</i>/d<i>t</i> = <i>H</i><sub><i>x</i></sub><i>x</i>*' + <i>H</i><sub>λ</sub>λ' + <i>H</i><sub><i>u</i></sub><i>u</i>*' + <i>H</i><sub><i>t</i></sub> = <i>H</i><sub><i>x</i></sub><i>H</i><sub>λ</sub> − <i>H</i><sub>λ</sub><i>H</i><sub><i>x</i></sub> + 0 + 0 = 0</span> a.e.</p>
         `
@@ -705,7 +603,7 @@
       {
         id: "t7-1",
         deck: "theory-noproof",
-        tag: "Topic 7 · No Proof",
+        tag: "G-7 · NO PROOF",
         title: "Problems with Final Payoff & Transversality Condition",
         q: `<p>How do the optimality conditions change when the objective includes a <span class="m"><i>C</i><sup>1</sup></span> terminal payoff <span class="m">φ(<i>x</i>(<i>t</i><sub>1</sub>))</span>: <span class="m"><i>J</i>(<i>u</i>) = ${intg("<i>t</i><sub>0</sub>", "<i>t</i><sub>1</sub>")} <i>f</i>(<i>t</i>, <i>x</i>, <i>u</i>) <i>dt</i> + φ(<i>x</i>(<i>t</i><sub>1</sub>))</span>?</p>`,
         a: `
@@ -715,20 +613,9 @@
         `
       },
       {
-        id: "t7-2",
-        deck: "theory-noproof",
-        tag: "Topic 7 · Related (No Proof)",
-        title: "Fixed Terminal State x(t₁) = x₁",
-        q: `<p>What happens to the transversality condition on <span class="m">λ(<i>t</i><sub>1</sub>)</span> when <strong>both</strong> state endpoints <span class="m"><i>x</i>(<i>t</i><sub>0</sub>) = <i>x</i><sub>0</sub></span> and <span class="m"><i>x</i>(<i>t</i><sub>1</sub>) = <i>x</i><sub>1</sub></span> are fixed?</p>`,
-        a: `
-          <p>There is <strong>no transversality condition on <span class="m">λ(<i>t</i><sub>1</sub>)</span></strong>.</p>
-          <p class="mt-2">The adjoint still satisfies <span class="m">λ' = −<i>H</i><sub><i>x</i></sub></span>, and its free integration constant <span class="m"><i>c</i></span> is determined instead by enforcing the terminal state constraint <span class="m"><i>x</i>*(<i>t</i><sub>1</sub>) = <i>x</i><sub>1</sub></span>.</p>
-        `
-      },
-      {
         id: "t8-1",
         deck: "theory-noproof",
-        tag: "Topic 8 · No Proof",
+        tag: "G-8 · NO PROOF",
         title: "Bounds on the Control: Optimality Sign Conditions",
         q: `<p>For bounded controls <span class="m"><i>a</i> ≤ <i>u</i>(<i>t</i>) ≤ <i>b</i></span>, state the first-order necessary conditions on <span class="m"><i>H</i><sub><i>u</i></sub> = <i>f</i><sub><i>u</i></sub> + λ<i>g</i><sub><i>u</i></sub></span> for both <strong>maximization</strong> and <strong>minimization</strong>.</p>`,
         a: `
@@ -750,10 +637,23 @@
           </ul>
         `
       },
+
+      // ==================== PIGNOTTI EXTRA NOTES (NOV 5 & 12) ====================
+      {
+        id: "t7-2",
+        deck: "pignotti-extra",
+        tag: "Extra Note · Nov 5",
+        title: "Fixed Terminal State x(t₁) = x₁",
+        q: `<p>What happens to the transversality condition on <span class="m">λ(<i>t</i><sub>1</sub>)</span> when <strong>both</strong> state endpoints <span class="m"><i>x</i>(<i>t</i><sub>0</sub>) = <i>x</i><sub>0</sub></span> and <span class="m"><i>x</i>(<i>t</i><sub>1</sub>) = <i>x</i><sub>1</sub></span> are fixed?</p>`,
+        a: `
+          <p>There is <strong>no transversality condition on <span class="m">λ(<i>t</i><sub>1</sub>)</span></strong>.</p>
+          <p class="mt-2">The adjoint still satisfies <span class="m">λ' = −<i>H</i><sub><i>x</i></sub></span>, and its free integration constant <span class="m"><i>c</i></span> is determined instead by enforcing the terminal state constraint <span class="m"><i>x</i>*(<i>t</i><sub>1</sub>) = <i>x</i><sub>1</sub></span>.</p>
+        `
+      },
       {
         id: "t8-2",
-        deck: "theory-noproof",
-        tag: "Related · Vector & Normal Cone",
+        deck: "pignotti-extra",
+        tag: "Extra Note · Nov 5 & 12",
         title: "General ℝᴺ-Valued Problem & Normal Cone Condition",
         q: `<p>For the vector maximization problem with <span class="m"><i>x</i> ∈ ℝ<sup><i>N</i></sup></span>, <span class="m"><i>u</i> ∈ <i>K</i> ⊆ <i>L</i><sup>2</sup>(0, <i>T</i>; ℝ<sup><i>m</i></sup>)</span> closed and convex, state the adjoint equation, transversality condition, and normal-cone optimality condition.</p>`,
         a: `
@@ -1216,17 +1116,10 @@
       "p-8": "Notes: 2026-10-26",
       "p-9": "Notes: 2026-10-26",
       "p-10": "Notes: 2026-10-26",
-      "t1-1": "Notes: 2026-10-08",
-      "t1-2": "Notes: 2026-10-08",
-      "t1-3": "Notes: 2026-10-08",
-      "t1-4": "Notes: 2026-10-08 & 2026-10-15",
-      "t2-1": "Notes: 2026-10-15",
-      "t2-2": "Notes: 2026-10-15",
-      "t3-1": "Notes: 2026-10-15 & 2026-10-19",
-      "t3-2": "Notes: 2026-10-15 & 2026-10-19",
-      "t4-1": "Notes: 2026-10-19",
-      "t4-2": "Notes: 2026-10-19",
-      "t4-3": "Notes: 2026-10-19",
+      "g-1": "Notes: 2026-10-08 & 2026-10-15",
+      "g-2": "Notes: 2026-10-15",
+      "g-3": "Notes: 2026-10-15 & 2026-10-19",
+      "g-4": "Notes: 2026-10-19",
       "t5-1": "Notes: 2026-10-19",
       "t6-1": "Notes: 2026-10-22",
       "t7-1": "Notes: 2026-10-22",
@@ -1382,6 +1275,9 @@
       } else if (deckObj && deckObj.kind === "noproof") {
         proofBadge.textContent = "NO PROOF";
         proofBadge.className = "px-2 py-0.5 rounded-md font-semibold border border-[var(--link)] text-[var(--link)]";
+      } else if (deckObj && deckObj.kind === "extra") {
+        proofBadge.textContent = "EXTRA NOTE";
+        proofBadge.className = "px-2 py-0.5 rounded-md font-semibold border border-[var(--warning)] text-[var(--warning)]";
       } else {
         proofBadge.textContent = "PRACTICE";
         proofBadge.className = "px-2 py-0.5 rounded-md font-semibold border border-[var(--border)] text-[var(--muted-foreground)]";
@@ -1473,6 +1369,8 @@
           ? `<span class="px-2 py-0.5 rounded font-semibold border border-[var(--error)] text-[var(--error)]">WITH PROOF</span>`
           : deckObj && deckObj.kind === "noproof"
           ? `<span class="px-2 py-0.5 rounded font-semibold border border-[var(--link)] text-[var(--link)]">NO PROOF</span>`
+          : deckObj && deckObj.kind === "extra"
+          ? `<span class="px-2 py-0.5 rounded font-semibold border border-[var(--warning)] text-[var(--warning)]">EXTRA NOTE</span>`
           : `<span class="px-2 py-0.5 rounded font-semibold border border-[var(--border)] text-[var(--muted-foreground)]">PRACTICE</span>`;
         const st = progress[c.id];
         const statusHtml = st === "mastered"
