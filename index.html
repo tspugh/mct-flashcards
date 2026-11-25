@@ -173,9 +173,9 @@
     <!-- Header -->
     <header class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 flex flex-wrap items-center justify-between gap-3">
       <div>
-        <h1 class="text-lg font-semibold tracking-tight">MCT Flashcards — Pignotti &amp; Palladino</h1>
+        <h1 class="text-lg font-semibold tracking-tight">MCT Flashcards — Palladino &amp; Pignotti</h1>
         <p class="text-xs text-[var(--muted-foreground)] mt-0.5">
-          Pignotti Theory (Topics 1–4 w/ proofs, 5–8 statements) &amp; Homeworks 1–4 · Palladino Homeworks 1 &amp; 3
+          Theory separated into WITH PROOF vs. No Proof · Homeworks separated by file · Multi-select decks
         </p>
       </div>
       <div class="flex items-center gap-2 flex-wrap">
@@ -199,9 +199,12 @@
     <!-- Deck / File Selector -->
     <section class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3">
       <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
-        <div class="flex items-center gap-2">
-          <span class="text-xs font-medium uppercase tracking-wider text-[var(--muted-foreground)]">Select Decks / Files (Multi-Select)</span>
+        <div class="flex flex-wrap items-center gap-1.5">
+          <span class="text-xs font-medium uppercase tracking-wider text-[var(--muted-foreground)] mr-1">Decks (Multi-Select)</span>
           <button id="selectAllDecksBtn" class="px-2 py-0.5 text-xs rounded border border-[var(--border)] hover:opacity-80 transition cursor-pointer">All</button>
+          <button id="selectProofDecksBtn" class="px-2 py-0.5 text-xs rounded border border-[var(--error)] text-[var(--error)] font-medium hover:opacity-80 transition cursor-pointer">Only WITH PROOF</button>
+          <button id="selectNoProofDecksBtn" class="px-2 py-0.5 text-xs rounded border border-[var(--link)] text-[var(--link)] font-medium hover:opacity-80 transition cursor-pointer">Only No Proof</button>
+          <button id="selectHwDecksBtn" class="px-2 py-0.5 text-xs rounded border border-[var(--border)] hover:opacity-80 transition cursor-pointer">Only Homeworks</button>
           <button id="clearDecksBtn" class="px-2 py-0.5 text-xs rounded border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition cursor-pointer">Clear</button>
         </div>
         <span id="masterySummary" class="text-xs text-[var(--muted-foreground)] font-mono"></span>
@@ -224,6 +227,7 @@
         <!-- Card Meta Bar -->
         <div class="px-5 py-3 border-b border-[var(--card-border)] flex flex-wrap items-center justify-between gap-2 text-xs">
           <div class="flex items-center gap-2 flex-wrap">
+            <span id="cardProofBadge" class="px-2 py-0.5 rounded-md font-semibold border"></span>
             <span id="cardDeckBadge" class="px-2 py-0.5 rounded-md font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]"></span>
             <span id="cardTagBadge" class="px-2 py-0.5 rounded-md border border-[var(--border)] text-[var(--muted-foreground)]"></span>
             <span id="cardDateBadge" class="px-2 py-0.5 rounded-md border border-[var(--border)] font-mono text-[var(--muted-foreground)]"></span>
@@ -293,18 +297,189 @@
     const vec2 = (a, b) => `<span class="mat"><span class="mat-col"><span>${a}</span><span>${b}</span></span></span>`;
 
     const DECKS = [
-      { id: "theory-proofs", label: "Pignotti Theory: Topics 1–4 (Proofs)" },
-      { id: "theory-noproof", label: "Pignotti Theory: Topics 5–8 (No Proof)" },
-      { id: "hw-10-16", label: "Pignotti HW 1 (10-16)" },
-      { id: "hw-10-23", label: "Pignotti HW 2 (10-23)" },
-      { id: "hw-11-06", label: "Pignotti HW 3 (11-06)" },
-      { id: "hw-11-14", label: "Pignotti HW 4 (11-14)" },
-      { id: "pal-hw1", label: "Palladino HW 1" },
-      { id: "pal-hw3", label: "Palladino HW 3 (+ Midterm Ex.)" },
+      { id: "pal-proofs", kind: "proof", label: "Palladino: WITH PROOF (P-3, P-5)" },
+      { id: "pal-noproof", kind: "noproof", label: "Palladino: No Proof (P-1,2,4,6–10)" },
+      { id: "theory-proofs", kind: "proof", label: "Pignotti: WITH PROOF (G-1–G-4)" },
+      { id: "theory-noproof", kind: "noproof", label: "Pignotti: No Proof (G-5–G-8)" },
+      { id: "hw-10-16", kind: "hw", label: "Pignotti HW 1 (10-16)" },
+      { id: "hw-10-23", kind: "hw", label: "Pignotti HW 2 (10-23)" },
+      { id: "hw-11-06", kind: "hw", label: "Pignotti HW 3 (11-06)" },
+      { id: "hw-11-14", kind: "hw", label: "Pignotti HW 4 (11-14)" },
+      { id: "pal-hw1", kind: "hw", label: "Palladino HW 1" },
+      { id: "pal-hw3", kind: "hw", label: "Palladino HW 3 (+ Midterm)" },
     ];
 
     const CARDS = [
-      // ==================== THEORY: TOPICS 1-4 (WITH PROOFS) ====================
+      // ==================== PALLADINO: WITH PROOF (P-3, P-5) ====================
+      {
+        id: "p-3",
+        deck: "pal-proofs",
+        tag: "P-3 · WITH PROOF (Must Memorize)",
+        title: "Global Controllability of Autonomous Linear Systems (Kalman Rank Condition)",
+        q: `<p>State and <strong>prove</strong> the <strong>Kalman rank condition</strong> for global controllability of <span class="m"><i>x</i>' = <i>Ax</i> + <i>Bu</i></span> (<span class="m"><i>A</i> ∈ ℝ<sup><i>n</i>×<i>n</i></sup></span>, <span class="m"><i>B</i> ∈ ℝ<sup><i>n</i>×<i>m</i></sup></span>, <span class="m"><i>u</i> ∈ ℝ<sup><i>m</i></sup></span> unconstrained).</p>`,
+        a: `
+          <p><strong>Theorem (Kalman rank condition):</strong> The following are equivalent:</p>
+          <ul class="bullet-list">
+            <li>(i) <span class="m"><i>x</i>' = <i>Ax</i> + <i>Bu</i></span> is globally controllable (in any time <span class="m"><i>T</i> &gt; 0</span>);</li>
+            <li>(ii) <span class="m">rank [<i>B</i> | <i>AB</i> | <i>A</i><sup>2</sup><i>B</i> | ⋯ | <i>A</i><sup><i>n</i>−1</sup><i>B</i>] = <i>n</i></span>.</li>
+          </ul>
+          <p class="mt-2"><strong>Proof:</strong> The solution is <span class="m"><i>x</i>(<i>T</i>) = <i>e</i><sup><i>TA</i></sup><i>x</i><sub>0</sub> + ${intg("0", "<i>T</i>")} <i>e</i><sup>(<i>T</i>−<i>s</i>)<i>A</i></sup><i>Bu</i>(<i>s</i>) <i>ds</i></span>. Define the <strong>Gramian</strong>:</p>
+          <div class="math-block"><i>G</i><sub><i>T</i></sub> = ${intg("0", "<i>T</i>")} <i>e</i><sup>(<i>T</i>−<i>s</i>)<i>A</i></sup> <i>BB</i><sup>⊤</sup> <i>e</i><sup>(<i>T</i>−<i>s</i>)<i>A</i><sup>⊤</sup></sup> <i>ds</i>.</div>
+          <p><strong>(ii) ⇒ (i):</strong></p>
+          <ol class="proof-list">
+            <li><strong><span class="m"><i>G</i><sub><i>T</i></sub></span> is invertible:</strong> <span class="m"><i>G</i><sub><i>T</i></sub></span> is symmetric and <span class="m">≥ 0</span>. If <span class="m">ψ<sup>⊤</sup><i>G</i><sub><i>T</i></sub>ψ = 0</span>, then <span class="m">${intg("0", "<i>T</i>")} |<i>B</i><sup>⊤</sup><i>e</i><sup>(<i>T</i>−<i>s</i>)<i>A</i><sup>⊤</sup></sup>ψ|<sup>2</sup> <i>ds</i> = 0</span>, so <span class="m">ψ<sup>⊤</sup><i>e</i><sup>(<i>T</i>−<i>s</i>)<i>A</i></sup><i>B</i> ≡ 0</span> on <span class="m">[0, <i>T</i>]</span>. Differentiating <span class="m"><i>k</i></span> times at <span class="m"><i>s</i> = <i>T</i></span> gives <span class="m">ψ<sup>⊤</sup><i>A</i><sup><i>k</i></sup><i>B</i> = 0</span> for all <span class="m"><i>k</i> ≥ 0</span>. By (ii), <span class="m">ψ = 0</span>.</li>
+            <li><strong>Explicit control:</strong> Given <span class="m"><i>x</i><sub>0</sub>, <i>x</i><sub>1</sub></span>, set
+              <div class="math-block"><i>u</i>(<i>s</i>) = <i>B</i><sup>⊤</sup> <i>e</i><sup>(<i>T</i>−<i>s</i>)<i>A</i><sup>⊤</sup></sup> <i>G</i><sub><i>T</i></sub><sup>−1</sup>(<i>x</i><sub>1</sub> − <i>e</i><sup><i>TA</i></sup><i>x</i><sub>0</sub>).</div>
+              Then <span class="m"><i>x</i>(<i>T</i>) = <i>e</i><sup><i>TA</i></sup><i>x</i><sub>0</sub> + <i>G</i><sub><i>T</i></sub><i>G</i><sub><i>T</i></sub><sup>−1</sup>(<i>x</i><sub>1</sub> − <i>e</i><sup><i>TA</i></sup><i>x</i><sub>0</sub>) = <i>x</i><sub>1</sub></span>.
+            </li>
+          </ol>
+          <p class="mt-2"><strong>(i) ⇒ (ii) (contrapositive):</strong> If <span class="m">rank &lt; <i>n</i></span>, there exists <span class="m">ψ ≠ 0</span> with <span class="m">ψ<sup>⊤</sup><i>A</i><sup><i>k</i></sup><i>B</i> = 0</span> for <span class="m"><i>k</i> = 0, …, <i>n</i>−1</span>. By <strong>Cayley–Hamilton</strong>, <span class="m"><i>A</i><sup><i>k</i></sup></span> for <span class="m"><i>k</i> ≥ <i>n</i></span> is a linear combination of <span class="m"><i>I</i>, …, <i>A</i><sup><i>n</i>−1</sup></span>, so <span class="m">ψ<sup>⊤</sup><i>A</i><sup><i>k</i></sup><i>B</i> = 0</span> for all <span class="m"><i>k</i></span>, hence <span class="m">ψ<sup>⊤</sup><i>e</i><sup><i>tA</i></sup><i>B</i> = 0</span> for all <span class="m"><i>t</i></span>. Then <span class="m">ψ<sup>⊤</sup><i>x</i>(<i>T</i>) = ψ<sup>⊤</sup><i>e</i><sup><i>TA</i></sup><i>x</i><sub>0</sub></span> does not depend on <span class="m"><i>u</i></span>: points <span class="m"><i>x</i><sub>1</sub></span> with <span class="m">ψ<sup>⊤</sup><i>x</i><sub>1</sub> ≠ ψ<sup>⊤</sup><i>e</i><sup><i>TA</i></sup><i>x</i><sub>0</sub></span> are unreachable. ∎</p>
+          <p class="text-xs text-[var(--muted-foreground)] mt-1"><em>(If time)</em> With a bounded control set, <span class="m">0 ∈ int <i>U</i></span> and Kalman give <em>local</em> controllability only.</p>
+        `
+      },
+      {
+        id: "p-5",
+        deck: "pal-proofs",
+        tag: "P-5 · WITH PROOF (Must Memorize)",
+        title: "Local Controllability of Nonlinear Systems by Linearization",
+        q: `<p>State and <strong>prove</strong> the theorem on <strong>local controllability (STLC) of nonlinear systems by linearization</strong> at an equilibrium <span class="m">(<i>x̄</i>, <i>ū</i>)</span>.</p>`,
+        a: `
+          <p><strong>Theorem (Linearization):</strong> Let <span class="m"><i>x</i>' = <i>f</i>(<i>x</i>, <i>u</i>)</span>, <span class="m"><i>f</i> ∈ <i>C</i><sup>1</sup></span>, and <span class="m"><i>f</i>(<i>x̄</i>, <i>ū</i>) = 0</span> with <strong><span class="m"><i>ū</i> ∈ int <i>U</i></span></strong>. Set <span class="m"><i>A</i> = ∂<sub><i>x</i></sub><i>f</i>(<i>x̄</i>, <i>ū</i>)</span>, <span class="m"><i>B</i> = ∂<sub><i>u</i></sub><i>f</i>(<i>x̄</i>, <i>ū</i>)</span>. If <span class="m">rank [<i>B</i> | <i>AB</i> | ⋯ | <i>A</i><sup><i>n</i>−1</sup><i>B</i>] = <i>n</i></span>, then the system is <strong>STLC</strong> at <span class="m">(<i>x̄</i>, <i>ū</i>)</span>: <span class="m"><i>x̄</i> ∈ int ℛ<sub><i>x̄</i></sub>(<i>T</i>)</span> for every <span class="m"><i>T</i> &gt; 0</span>.</p>
+          <p class="mt-2"><strong>Proof:</strong></p>
+          <ol class="proof-list">
+            <li>Fix <span class="m"><i>T</i> &gt; 0</span>. Define the <strong>end-point map</strong> <span class="m"><i>E</i><sub><i>T</i></sub>(<i>u</i>) = <i>x</i><sub><i>u</i></sub>(<i>T</i>)</span>, where <span class="m"><i>x</i><sub><i>u</i></sub></span> solves <span class="m"><i>x</i>' = <i>f</i>(<i>x</i>, <i>u</i>)</span>, <span class="m"><i>x</i>(0) = <i>x̄</i></span>, for <span class="m"><i>u</i> ∈ <i>L</i><sup>∞</sup>([0, <i>T</i>]; ℝ<sup><i>m</i></sup>)</span> close to the constant control <span class="m"><i>ū</i></span> (so <span class="m"><i>u</i> ∈ <i>U</i></span>). By differentiable dependence on data (Gronwall), <span class="m"><i>E</i><sub><i>T</i></sub></span> is <span class="m"><i>C</i><sup>1</sup></span> near <span class="m"><i>ū</i></span>, and <span class="m"><i>E</i><sub><i>T</i></sub>(<i>ū</i>) = <i>x̄</i></span> since <span class="m"><i>x̄</i></span> is an equilibrium.</li>
+            <li>Its differential in direction <span class="m"><i>v</i></span> is <span class="m"><i>dE</i><sub><i>T</i></sub>(<i>ū</i>)<i>v</i> = <i>y</i>(<i>T</i>)</span>, where <span class="m"><i>y</i>' = <i>Ay</i> + <i>Bv</i></span>, <span class="m"><i>y</i>(0) = 0</span>:
+              <div class="math-block"><i>dE</i><sub><i>T</i></sub>(<i>ū</i>)<i>v</i> = ${intg("0", "<i>T</i>")} <i>e</i><sup>(<i>T</i>−<i>s</i>)<i>A</i></sup> <i>Bv</i>(<i>s</i>) <i>ds</i>.</div>
+            </li>
+            <li>By Kalman and P-3, the linearized system is controllable, so <span class="m"><i>dE</i><sub><i>T</i></sub>(<i>ū</i>)</span> is <strong>onto <span class="m">ℝ<sup><i>n</i></sup></span></strong>.</li>
+            <li>Choose <span class="m"><i>v</i><sub>1</sub>, …, <i>v</i><sub><i>n</i></sub></span> such that <span class="m"><i>dE</i><sub><i>T</i></sub>(<i>ū</i>)<i>v</i><sub><i>i</i></sub></span> form a basis of <span class="m">ℝ<sup><i>n</i></sup></span>, and define <span class="m"><i>F</i> : ℝ<sup><i>n</i></sup> → ℝ<sup><i>n</i></sup></span> by <span class="m"><i>F</i>(<i>a</i>) = <i>E</i><sub><i>T</i></sub>(<i>ū</i> + ∑ <i>a</i><sub><i>i</i></sub><i>v</i><sub><i>i</i></sub>)</span>. Then <span class="m"><i>F</i>(0) = <i>x̄</i></span> and <span class="m"><i>DF</i>(0)</span> is invertible. By the <strong>Inverse Function Theorem</strong>, <span class="m"><i>F</i></span> maps a neighborhood of <span class="m">0</span> onto a neighborhood of <span class="m"><i>x̄</i></span>, so <span class="m"><i>x̄</i> ∈ int ℛ<sub><i>x̄</i></sub>(<i>T</i>)</span> (controls remain admissible for small <span class="m"><i>a</i></span> because <span class="m"><i>ū</i> ∈ int <i>U</i></span>). ∎</li>
+          </ol>
+          <p class="text-xs text-[var(--muted-foreground)] mt-1"><em>Remark:</em> Kalman fails ⇏ not controllable (use Lie brackets, P-6 to P-10).</p>
+        `
+      },
+
+      // ==================== PALLADINO: NO PROOF (P-1, P-2, P-4, P-6..P-10) ====================
+      {
+        id: "p-1",
+        deck: "pal-noproof",
+        tag: "P-1 · NO PROOF (Definition)",
+        title: "Definition of Local Controllability & STLC",
+        q: `<p>State the definition of <strong>local controllability (in time <span class="m"><i>T</i></span>)</strong> and <strong>small-time local controllability (STLC)</strong> at an equilibrium <span class="m">(<i>x̄</i>, <i>ū</i>)</span>.</p>`,
+        a: `
+          <p><strong>Definition:</strong> Let <span class="m">(<i>x̄</i>, <i>ū</i>)</span> be an equilibrium: <span class="m"><i>f</i>(<i>x̄</i>, <i>ū</i>) = 0</span>. The system is <strong>locally controllable (in time <i>T</i>)</strong> at <span class="m"><i>x̄</i></span> if</p>
+          <div class="math-block"><i>x̄</i> ∈ int ℛ<sub><i>x̄</i></sub>(<i>T</i>),</div>
+          <p>i.e., there is a neighborhood of <span class="m"><i>x̄</i></span> whose points can all be reached from <span class="m"><i>x̄</i></span> in time <span class="m"><i>T</i></span> (equivalently, steered to <span class="m"><i>x̄</i></span>).</p>
+          <p class="mt-2">It is <strong>small-time locally controllable (STLC)</strong> if this holds for <strong>every <span class="m"><i>T</i> &gt; 0</span></strong>.</p>
+          <p class="text-xs text-[var(--muted-foreground)] mt-2"><em>(If time)</em> Stronger version: ∀ε &gt; 0 ∃δ &gt; 0 such that any <span class="m"><i>x</i><sub>0</sub>, <i>x</i><sub>1</sub> ∈ <i>B</i>(<i>x̄</i>, δ)</span> can be joined in time <span class="m"><i>T</i></span> by a control with <span class="m">‖<i>u</i> − <i>ū</i>‖<sub><i>L</i><sup>∞</sup></sub> &lt; ε</span>.</p>
+        `
+      },
+      {
+        id: "p-2",
+        deck: "pal-noproof",
+        tag: "P-2 · NO PROOF (Definition)",
+        title: "Definition of Global Controllability",
+        q: `<p>State the definition of <strong>global controllability</strong> for a control system <span class="m"><i>x</i>' = <i>f</i>(<i>x</i>, <i>u</i>)</span>, <span class="m"><i>x</i> ∈ ℝ<sup><i>n</i></sup></span>, <span class="m"><i>u</i> ∈ <i>U</i></span>.</p>`,
+        a: `
+          <p><strong>Definition:</strong> The system is <strong>globally controllable</strong> if for all <span class="m"><i>x</i><sub>0</sub>, <i>x</i><sub>1</sub> ∈ ℝ<sup><i>n</i></sup></span> there exist <span class="m"><i>T</i> &gt; 0</span> and an admissible control <span class="m"><i>u</i> : [0, <i>T</i>] → <i>U</i></span> whose trajectory from <span class="m"><i>x</i><sub>0</sub></span> satisfies <span class="m"><i>x</i>(<i>T</i>) = <i>x</i><sub>1</sub></span>.</p>
+          <p class="mt-2">Equivalently:</p>
+          <div class="math-block">⋃<sub><i>T</i>&gt;0</sub> ℛ<sub><i>x</i><sub>0</sub></sub>(<i>T</i>) = ℝ<sup><i>n</i></sup> &nbsp;&nbsp; for every <i>x</i><sub>0</sub> ∈ ℝ<sup><i>n</i></sup>.</div>
+        `
+      },
+      {
+        id: "p-4",
+        deck: "pal-noproof",
+        tag: "P-4 · NO PROOF (Statements)",
+        title: "Global Controllability of Non-Autonomous Linear Systems",
+        q: `<p>For <span class="m"><i>x</i>' = <i>A</i>(<i>t</i>)<i>x</i> + <i>B</i>(<i>t</i>)<i>u</i></span> on <span class="m">[<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>]</span> (with state-transition matrix <span class="m">Φ(<i>t</i>, <i>s</i>)</span>), state both the <strong>Gramian criterion</strong> and the <strong>differential rank condition with <span class="m"><i>B</i><sub><i>k</i></sub></span></strong>.</p>`,
+        a: `
+          <p><strong>1. Gramian criterion:</strong> Controllable on <span class="m">[<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>]</span> <strong>if and only if</strong></p>
+          <div class="math-block"><i>G</i>(<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>) = ${intg("<i>t</i><sub>0</sub>", "<i>t</i><sub>1</sub>")} Φ(<i>t</i><sub>0</sub>, <i>s</i>) <i>B</i>(<i>s</i>) <i>B</i>(<i>s</i>)<sup>⊤</sup> Φ(<i>t</i><sub>0</sub>, <i>s</i>)<sup>⊤</sup> <i>ds</i></div>
+          <p>is invertible. <em>(Steering control: <span class="m"><i>u</i>(<i>s</i>) = <i>B</i>(<i>s</i>)<sup>⊤</sup>Φ(<i>t</i><sub>0</sub>, <i>s</i>)<sup>⊤</sup><i>G</i><sup>−1</sup>(Φ(<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>)<i>x</i><sub>1</sub> − <i>x</i><sub>0</sub>)</span>.)</em></p>
+          <p class="mt-2"><strong>2. Rank condition with <span class="m"><i>B</i><sub><i>k</i></sub></span>:</strong> Assume <span class="m"><i>A</i>, <i>B</i> ∈ <i>C</i><sup><i>n</i>−1</sup></span>, and define recursively <span class="m"><i>B</i><sub>0</sub> = <i>B</i></span> and <span class="m"><i>B</i><sub><i>k</i></sub> = <i>A</i><i>B</i><sub><i>k</i>−1</sub> − <i>B</i>'<sub><i>k</i>−1</sub></span>. If there exists <span class="m"><i>t̄</i> ∈ [<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>]</span> with</p>
+          <div class="math-block">rank [<i>B</i><sub>0</sub>(<i>t̄</i>) | <i>B</i><sub>1</sub>(<i>t̄</i>) | ⋯ | <i>B</i><sub><i>n</i>−1</sub>(<i>t̄</i>)] = <i>n</i>,</div>
+          <p>then the system is controllable on <span class="m">[<i>t</i><sub>0</sub>, <i>t</i><sub>1</sub>]</span>. If <span class="m"><i>A</i>, <i>B</i></span> are <strong>analytic</strong>, this condition is also <strong>necessary</strong> (for some <span class="m"><i>t̄</i></span>).</p>
+        `
+      },
+      {
+        id: "p-6",
+        deck: "pal-noproof",
+        tag: "P-6 · NO PROOF (Definition & Limits)",
+        title: "Lie Brackets and Their Limit Characterizations",
+        q: `<p>Define the <strong>Lie bracket</strong> <span class="m">[<i>f</i>, <i>g</i>](<i>x</i>)</span> of smooth vector fields <span class="m"><i>f</i>, <i>g</i></span> on <span class="m">ℝ<sup><i>n</i></sup></span>, and state its <strong>two limit characterizations</strong> using the flows <span class="m">Φ<sup><i>f</i></sup><sub><i>t</i></sub>, Φ<sup><i>g</i></sup><sub><i>t</i></sub></span>.</p>`,
+        a: `
+          <p><strong>Definition:</strong></p>
+          <div class="math-block">[<i>f</i>, <i>g</i>](<i>x</i>) = <i>Dg</i>(<i>x</i>)<i>f</i>(<i>x</i>) − <i>Df</i>(<i>x</i>)<i>g</i>(<i>x</i>).</div>
+          <p><strong>Limit characterizations:</strong></p>
+          <ol class="proof-list">
+            <li><strong>Derivative of <span class="m"><i>g</i></span> along the flow of <span class="m"><i>f</i></span>:</strong>
+              <div class="math-block">[<i>f</i>, <i>g</i>](<i>x</i>) = lim<sub><i>t</i>→0</sub> ${fr("<i>D</i>Φ<sup><i>f</i></sup><sub>−<i>t</i></sub>(Φ<sup><i>f</i></sup><sub><i>t</i></sub>(<i>x</i>)) <i>g</i>(Φ<sup><i>f</i></sup><sub><i>t</i></sub>(<i>x</i>)) − <i>g</i>(<i>x</i>)", "<i>t</i>")}.</div>
+            </li>
+            <li><strong>Commutator of flows:</strong>
+              <div class="math-block">Φ<sup><i>g</i></sup><sub>−<i>t</i></sub> ∘ Φ<sup><i>f</i></sup><sub>−<i>t</i></sub> ∘ Φ<sup><i>g</i></sup><sub><i>t</i></sub> ∘ Φ<sup><i>f</i></sup><sub><i>t</i></sub>(<i>x</i>) = <i>x</i> + <i>t</i><sup>2</sup>[<i>f</i>, <i>g</i>](<i>x</i>) + <i>o</i>(<i>t</i><sup>2</sup>).</div>
+            </li>
+          </ol>
+          <p class="text-xs text-[var(--muted-foreground)] mt-1"><em>Meaning:</em> <span class="m">[<i>f</i>, <i>g</i>] = 0</span> iff the flows commute; the bracket is the new direction you can move by switching between <span class="m"><i>f</i></span> and <span class="m"><i>g</i></span>.</p>
+        `
+      },
+      {
+        id: "p-7",
+        deck: "pal-noproof",
+        tag: "P-7 · NO PROOF (Theorem)",
+        title: "Chow–Rashevskii Theorem",
+        q: `<p>State the <strong>Chow–Rashevskii Theorem</strong> for driftless control-affine systems.</p>`,
+        a: `
+          <p><strong>Theorem (Chow–Rashevskii):</strong> Consider the driftless system</p>
+          <div class="math-block"><i>x</i>' = ∑<sub><i>i</i>=1</sub><sup><i>m</i></sup> <i>u</i><sub><i>i</i></sub> <i>g</i><sub><i>i</i></sub>(<i>x</i>), &nbsp;&nbsp; <i>g</i><sub><i>i</i></sub> smooth, &nbsp; <i>U</i> = ℝ<sup><i>m</i></sup></div>
+          <p>on a connected manifold (e.g. <span class="m">ℝ<sup><i>n</i></sup></span>). Let <span class="m">ℒ</span> be the Lie algebra generated by <span class="m"><i>g</i><sub>1</sub>, …, <i>g</i><sub><i>m</i></sub></span> (all iterated Lie brackets). If</p>
+          <div class="math-block">span ℒ(<i>x</i>) = ℝ<sup><i>n</i></sup> &nbsp;&nbsp; for every <i>x</i>,</div>
+          <p>then the system is <strong>globally controllable in any time <span class="m"><i>T</i> &gt; 0</span></strong>: for every <span class="m"><i>x</i><sub>0</sub>, <i>x</i><sub>1</sub></span> and every <span class="m"><i>T</i> &gt; 0</span> there is a control steering <span class="m"><i>x</i><sub>0</sub></span> to <span class="m"><i>x</i><sub>1</sub></span> in time <span class="m"><i>T</i></span> (in particular <span class="m"><i>x</i><sub>0</sub> ∈ int ℛ<sub><i>x</i><sub>0</sub></sub>(<i>T</i>)</span>).</p>
+        `
+      },
+      {
+        id: "p-8",
+        deck: "pal-noproof",
+        tag: "P-8 · NO PROOF (Definition)",
+        title: "Definition of a Weakly Recurrent Vector Field",
+        q: `<p>Define a <strong>weakly recurrent</strong> vector field <span class="m"><i>f</i></span> on <span class="m">ℝ<sup><i>n</i></sup></span> and give a standard example.</p>`,
+        a: `
+          <p><strong>Definition:</strong> A vector field <span class="m"><i>f</i></span> is <strong>weakly recurrent</strong> if for every <span class="m"><i>x</i><sub>0</sub> ∈ ℝ<sup><i>n</i></sup></span>, every neighborhood <span class="m"><i>V</i></span> of <span class="m"><i>x</i><sub>0</sub></span>, and every <span class="m"><i>t</i> &gt; 0</span>, there exist <span class="m"><i>x̄</i> ∈ <i>V</i></span> and <span class="m"><i>t</i>* &gt; <i>t</i></span> such that</p>
+          <div class="math-block">Φ<sup><i>f</i></sup><sub><i>t</i>*</sub>(<i>x̄</i>) ∈ <i>V</i>.</div>
+          <p>(The flow of <span class="m"><i>f</i></span> returns arbitrarily close to every point for arbitrarily large times.)</p>
+          <p class="mt-2"><strong>Example:</strong> Periodic flows, such as the planar rotation <span class="m"><i>f</i>(<i>x</i>) = <i>Ax</i></span> with <span class="m"><i>A</i> = ${mat2("0", "−1", "1", "0")}</span>.</p>
+        `
+      },
+      {
+        id: "p-9",
+        deck: "pal-noproof",
+        tag: "P-9 · NO PROOF (Theorem)",
+        title: "Controllability of Control-Affine Systems with Recurrent Drift",
+        q: `<p>State the global controllability theorem for nonlinear <strong>control-affine systems with weakly recurrent drift</strong>: <span class="m"><i>x</i>' = <i>f</i>(<i>x</i>) + ∑<sub><i>i</i>=1</sub><sup><i>m</i></sup> <i>u</i><sub><i>i</i></sub><i>g</i><sub><i>i</i></sub>(<i>x</i>)</span>, <span class="m"><i>u</i> ∈ <i>U</i> ⊆ ℝ<sup><i>m</i></sup></span>.</p>`,
+        a: `
+          <p><strong>Theorem (Recurrent drift):</strong> Assume:</p>
+          <ul class="bullet-list">
+            <li><span class="m"><i>f</i>, <i>g</i><sub><i>i</i></sub></span> are smooth;</li>
+            <li><strong><span class="m">0 ∈ int <i>U</i></span></strong>;</li>
+            <li><span class="m"><i>f</i></span> is <strong>weakly recurrent</strong>;</li>
+            <li><span class="m">span ℒ<sub><i>f</i></sub>(<i>x</i>) = ℝ<sup><i>n</i></sup></span> for every <span class="m"><i>x</i></span>, where <span class="m">ℒ<sub><i>f</i></sub></span> is the Lie algebra generated by <span class="m"><i>f</i>, <i>g</i><sub>1</sub>, …, <i>g</i><sub><i>m</i></sub></span>.</li>
+          </ul>
+          <p class="mt-2">Then <span class="m">⋃<sub><i>T</i>&gt;0</sub> ℛ<sub><i>x</i><sub>0</sub></sub>(<i>T</i>) = ℝ<sup><i>n</i></sup></span> for every <span class="m"><i>x</i><sub>0</sub></span>, i.e., the system is <strong>globally controllable</strong>.</p>
+          <p class="text-xs text-[var(--muted-foreground)] mt-1"><em>(If time)</em> Variant: if <span class="m"><i>U</i> = ℝ<sup><i>m</i></sup></span> and the Lie algebra generated by <span class="m"><i>g</i><sub>1</sub>, …, <i>g</i><sub><i>m</i></sub></span> alone has full rank, Chow–Rashevskii applies even with non-recurrent drift (using large controls).</p>
+        `
+      },
+      {
+        id: "p-10",
+        deck: "pal-noproof",
+        tag: "P-10 · NO PROOF (Theorem + Warning)",
+        title: "Krener's Theorem",
+        q: `<p>State <strong>Krener's Theorem</strong> for control-affine systems <span class="m"><i>x</i>' = <i>f</i>(<i>x</i>) + ∑ <i>u</i><sub><i>i</i></sub><i>g</i><sub><i>i</i></sub>(<i>x</i>)</span>, and explain the crucial <strong>warning</strong> (with a counterexample) about why it does <em>not</em> by itself imply STLC.</p>`,
+        a: `
+          <p><strong>Theorem (Krener):</strong> Let <span class="m"><i>f</i>, <i>g</i><sub>1</sub>, …, <i>g</i><sub><i>m</i></sub></span> be smooth, <strong><span class="m">0 ∈ int <i>U</i></span></strong>, and <span class="m">span ℒ<sub><i>f</i></sub>(<i>x</i>) = ℝ<sup><i>n</i></sup></span> for every <span class="m"><i>x</i></span> (where <span class="m">ℒ<sub><i>f</i></sub></span> is generated by <span class="m"><i>f</i>, <i>g</i><sub>1</sub>, …, <i>g</i><sub><i>m</i></sub></span>). Then for every <span class="m"><i>T</i> &gt; 0</span>:</p>
+          <div class="math-block">int ( ⋃<sub>0≤<i>t</i>≤<i>T</i></sub> ℛ<sub><i>x̄</i></sub>(<i>t</i>) ) ≠ ∅ &nbsp;&nbsp; and &nbsp;&nbsp; <i>x̄</i> ∈ <span style="text-decoration: overline">int ℛ<sub><i>x̄</i></sub>(≤ <i>T</i>)</span>.</div>
+          <p class="mt-2"><strong>Warning:</strong> Krener does <strong>NOT</strong> say <span class="m"><i>x̄</i> ∈ int ℛ<sub><i>x̄</i></sub>(<i>T</i>)</span> (STLC requires a further argument, e.g. direct computation). <strong>Counterexample:</strong> <span class="m"><i>x</i>' = 1, <i>y</i>' = <i>u</i></span> has full rank (<span class="m"><i>f</i>=(1,0)<sup>⊤</sup>, <i>g</i>=(0,1)<sup>⊤</sup></span>), but the reachable set is a forward cone (<span class="m"><i>x</i> ≥ <i>x</i><sub>0</sub></span>), not a neighborhood of <span class="m"><i>x̄</i></span>.</p>
+        `
+      },
+
+      // ==================== PIGNOTTI THEORY: TOPICS 1-4 (WITH PROOFS) ====================
       {
         id: "t1-1",
         deck: "theory-proofs",
@@ -1031,6 +1206,16 @@
 
     // Lecture / homework dates mapped from your MCT class notes
     const CARD_DATES = {
+      "p-1": "Notes: 2026-09-21 & 2026-09-28",
+      "p-2": "Notes: 2026-09-21 & 2026-09-28",
+      "p-3": "Notes: 2026-09-28",
+      "p-4": "Notes: 2026-09-28 & 2026-10-01",
+      "p-5": "Notes: 2026-10-05",
+      "p-6": "Notes: 2026-10-12",
+      "p-7": "Notes: 2026-10-12",
+      "p-8": "Notes: 2026-10-26",
+      "p-9": "Notes: 2026-10-26",
+      "p-10": "Notes: 2026-10-26",
       "t1-1": "Notes: 2026-10-08",
       "t1-2": "Notes: 2026-10-08",
       "t1-3": "Notes: 2026-10-08",
@@ -1190,6 +1375,17 @@
 
       const card = cards[currentIndex];
       const deckObj = DECKS.find(d => d.id === card.deck);
+      const proofBadge = document.getElementById("cardProofBadge");
+      if (deckObj && deckObj.kind === "proof") {
+        proofBadge.textContent = "WITH PROOF";
+        proofBadge.className = "px-2 py-0.5 rounded-md font-semibold border border-[var(--error)] text-[var(--error)]";
+      } else if (deckObj && deckObj.kind === "noproof") {
+        proofBadge.textContent = "NO PROOF";
+        proofBadge.className = "px-2 py-0.5 rounded-md font-semibold border border-[var(--link)] text-[var(--link)]";
+      } else {
+        proofBadge.textContent = "PRACTICE";
+        proofBadge.className = "px-2 py-0.5 rounded-md font-semibold border border-[var(--border)] text-[var(--muted-foreground)]";
+      }
       document.getElementById("cardDeckBadge").textContent = deckObj ? deckObj.label : card.deck;
       document.getElementById("cardTagBadge").textContent = card.tag;
       document.getElementById("cardDateBadge").textContent = CARD_DATES[card.id] || "";
@@ -1272,6 +1468,12 @@
       }
       list.innerHTML = "";
       cards.forEach((c, idx) => {
+        const deckObj = DECKS.find(d => d.id === c.deck);
+        const kindBadge = deckObj && deckObj.kind === "proof"
+          ? `<span class="px-2 py-0.5 rounded font-semibold border border-[var(--error)] text-[var(--error)]">WITH PROOF</span>`
+          : deckObj && deckObj.kind === "noproof"
+          ? `<span class="px-2 py-0.5 rounded font-semibold border border-[var(--link)] text-[var(--link)]">NO PROOF</span>`
+          : `<span class="px-2 py-0.5 rounded font-semibold border border-[var(--border)] text-[var(--muted-foreground)]">PRACTICE</span>`;
         const st = progress[c.id];
         const statusHtml = st === "mastered"
           ? `<span class="px-2 py-0.5 rounded text-xs border border-[var(--success)] text-[var(--success)]">Mastered ✓</span>`
@@ -1285,6 +1487,7 @@
             <div class="flex flex-wrap items-center justify-between gap-2 mb-1.5 text-xs">
               <div class="flex items-center gap-2 flex-wrap">
                 <span class="font-mono text-[var(--muted-foreground)]">#${idx + 1}</span>
+                ${kindBadge}
                 <span class="px-2 py-0.5 rounded border border-[var(--border)] text-[var(--muted-foreground)]">${c.tag}</span>
                 <span class="px-2 py-0.5 rounded border border-[var(--border)] font-mono text-[var(--muted-foreground)]">${CARD_DATES[c.id] || ""}</span>
                 ${statusHtml}
@@ -1322,6 +1525,75 @@
     // Event wiring
     document.getElementById("selectAllDecksBtn").onclick = () => {
       selectedDecks = new Set(DECKS.map(d => d.id));
+      currentIndex = 0;
+      answerOpen = false;
+  
+    const THEME_KEY = "mct_pignotti_theme_v1";
+    const applyTheme = (t) => {
+      document.documentElement.classList.toggle("dark", t === "dark");
+      const btn = document.getElementById("themeToggleBtn");
+      if (btn) btn.textContent = t === "dark" ? "☀ Light" : "☾ Dark";
+    };
+    let savedTheme = null;
+    try { savedTheme = localStorage.getItem(THEME_KEY); } catch {}
+    const initialTheme = savedTheme || (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    applyTheme(initialTheme);
+    document.getElementById("themeToggleBtn").onclick = () => {
+      const next = document.documentElement.classList.contains("dark") ? "light" : "dark";
+      try { localStorage.setItem(THEME_KEY, next); } catch {}
+      applyTheme(next);
+    };
+
+    render();
+    };
+    document.getElementById("selectProofDecksBtn").onclick = () => {
+      selectedDecks = new Set(DECKS.filter(d => d.kind === "proof").map(d => d.id));
+      currentIndex = 0;
+      answerOpen = false;
+  
+    const THEME_KEY = "mct_pignotti_theme_v1";
+    const applyTheme = (t) => {
+      document.documentElement.classList.toggle("dark", t === "dark");
+      const btn = document.getElementById("themeToggleBtn");
+      if (btn) btn.textContent = t === "dark" ? "☀ Light" : "☾ Dark";
+    };
+    let savedTheme = null;
+    try { savedTheme = localStorage.getItem(THEME_KEY); } catch {}
+    const initialTheme = savedTheme || (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    applyTheme(initialTheme);
+    document.getElementById("themeToggleBtn").onclick = () => {
+      const next = document.documentElement.classList.contains("dark") ? "light" : "dark";
+      try { localStorage.setItem(THEME_KEY, next); } catch {}
+      applyTheme(next);
+    };
+
+    render();
+    };
+    document.getElementById("selectNoProofDecksBtn").onclick = () => {
+      selectedDecks = new Set(DECKS.filter(d => d.kind === "noproof").map(d => d.id));
+      currentIndex = 0;
+      answerOpen = false;
+  
+    const THEME_KEY = "mct_pignotti_theme_v1";
+    const applyTheme = (t) => {
+      document.documentElement.classList.toggle("dark", t === "dark");
+      const btn = document.getElementById("themeToggleBtn");
+      if (btn) btn.textContent = t === "dark" ? "☀ Light" : "☾ Dark";
+    };
+    let savedTheme = null;
+    try { savedTheme = localStorage.getItem(THEME_KEY); } catch {}
+    const initialTheme = savedTheme || (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    applyTheme(initialTheme);
+    document.getElementById("themeToggleBtn").onclick = () => {
+      const next = document.documentElement.classList.contains("dark") ? "light" : "dark";
+      try { localStorage.setItem(THEME_KEY, next); } catch {}
+      applyTheme(next);
+    };
+
+    render();
+    };
+    document.getElementById("selectHwDecksBtn").onclick = () => {
+      selectedDecks = new Set(DECKS.filter(d => d.kind === "hw").map(d => d.id));
       currentIndex = 0;
       answerOpen = false;
   
