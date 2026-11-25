@@ -173,9 +173,9 @@
     <!-- Header -->
     <header class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 flex flex-wrap items-center justify-between gap-3">
       <div>
-        <h1 class="text-lg font-semibold tracking-tight">MCT Flashcards — Prof. Pignotti</h1>
+        <h1 class="text-lg font-semibold tracking-tight">MCT Flashcards — Pignotti &amp; Palladino</h1>
         <p class="text-xs text-[var(--muted-foreground)] mt-0.5">
-          Optimal Control · Topics 1–4 (with proofs), Topics 5–8 (statements), and Homeworks separated by file
+          Pignotti Theory (Topics 1–4 w/ proofs, 5–8 statements) &amp; Homeworks 1–4 · Palladino Homeworks 1 &amp; 3
         </p>
       </div>
       <div class="flex items-center gap-2 flex-wrap">
@@ -293,12 +293,14 @@
     const vec2 = (a, b) => `<span class="mat"><span class="mat-col"><span>${a}</span><span>${b}</span></span></span>`;
 
     const DECKS = [
-      { id: "theory-proofs", label: "Theory: Topics 1–4 (With Proofs)" },
-      { id: "theory-noproof", label: "Theory: Topics 5–8 (No Proof)" },
-      { id: "hw-10-16", label: "HW 1: 2026-10-16" },
-      { id: "hw-10-23", label: "HW 2: 2026-10-23" },
-      { id: "hw-11-06", label: "HW 3: 2026-11-06" },
-      { id: "hw-11-14", label: "HW 4: 2026-11-14" },
+      { id: "theory-proofs", label: "Pignotti Theory: Topics 1–4 (Proofs)" },
+      { id: "theory-noproof", label: "Pignotti Theory: Topics 5–8 (No Proof)" },
+      { id: "hw-10-16", label: "Pignotti HW 1 (10-16)" },
+      { id: "hw-10-23", label: "Pignotti HW 2 (10-23)" },
+      { id: "hw-11-06", label: "Pignotti HW 3 (11-06)" },
+      { id: "hw-11-14", label: "Pignotti HW 4 (11-14)" },
+      { id: "pal-hw1", label: "Palladino HW 1" },
+      { id: "pal-hw3", label: "Palladino HW 3 (+ Midterm Ex.)" },
     ];
 
     const CARDS = [
@@ -850,6 +852,180 @@
           </ul>
           <div class="math-block"><i>u</i>*(<i>t</i>) = ${cases([`2, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>t</i> ∈ [0, 1]`, `${fr("5 − <i>t</i><sup>2</sup>", "2")}, &nbsp; <i>t</i> ∈ (1, 2]`])} &nbsp;&nbsp; <i>x</i>*(<i>t</i>) = ${cases([`2 − 2<i>t</i>, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>t</i> ∈ [0, 1]`, `${fr("<i>t</i><sup>3</sup>", "6")} − ${fr("5<i>t</i>", "2")} + ${fr("7", "3")}, &nbsp; <i>t</i> ∈ (1, 2]`])}</div>
         `
+      },
+
+      // ==================== PALLADINO HW 1 ====================
+      {
+        id: "pal1-1",
+        deck: "pal-hw1",
+        tag: "Palladino HW 1 · Ex. 1",
+        title: "Kalman Controllability Criterion with Parameter α",
+        q: `<p>Prove that the linear control system</p><div class="math-block">${cases(["<i>ẋ</i><sub>1</sub> = 2<i>x</i><sub>1</sub> + (α − 3)<i>x</i><sub>2</sub> + <i>u</i><sub>1</sub> + <i>u</i><sub>2</sub>", "<i>ẋ</i><sub>2</sub> = 2<i>x</i><sub>2</sub> + α(α − 1)<i>u</i><sub>1</sub>"])} &nbsp;&nbsp; (<i>u</i><sub>1</sub>, <i>u</i><sub>2</sub>) ∈ ℝ<sup>2</sup>, &nbsp; α ∈ ℝ</div><p>is completely controllable if and only if <span class="m">α(α − 1) ≠ 0</span>.</p>`,
+        a: `
+          <ul class="bullet-list">
+            <li>Write <span class="m"><i>ẋ</i> = <i>Ax</i> + <i>Bu</i></span> with:
+              <div class="math-block"><i>A</i> = ${mat2("2", "α − 3", "0", "2")}, &nbsp;&nbsp; <i>B</i> = ${mat2("1", "1", "α(α − 1)", "0")}.</div>
+            </li>
+            <li>Compute <span class="m"><i>AB</i></span>:
+              <div class="math-block"><i>AB</i> = ${mat2("2 + α(α − 1)(α − 3)", "2", "2α(α − 1)", "0")}.</div>
+            </li>
+            <li>By Kalman's Theorem, the system is completely controllable iff <span class="m">rank [<i>B</i> &nbsp; <i>AB</i>] = 2</span>.</li>
+            <li>If <span class="m">α(α − 1) = 0</span> (i.e. <span class="m">α = 0</span> or <span class="m">α = 1</span>), the entire second row of <span class="m">[<i>B</i> &nbsp; <i>AB</i>]</span> is zero, so <span class="m">rank = 1 &lt; 2</span> (not controllable).</li>
+            <li>If <span class="m">α(α − 1) ≠ 0</span>, the two columns of <span class="m"><i>B</i></span> alone have <span class="m">det(<i>B</i>) = −α(α − 1) ≠ 0</span>, so <span class="m">rank [<i>B</i> &nbsp; <i>AB</i>] = 2</span> (completely controllable). ∎</li>
+          </ul>
+        `
+      },
+      {
+        id: "pal1-2",
+        deck: "pal-hw1",
+        tag: "Palladino HW 1 · Ex. 1.4",
+        title: "Controlled Car: Linearization Along Straight Segments & Circular Arcs",
+        q: `<p>Consider the controlled car:</p><div class="math-block"><i>ẋ</i> = <i>v</i>(<i>t</i>) cos θ(<i>t</i>), &nbsp;&nbsp; <i>ẏ</i> = <i>v</i>(<i>t</i>) sin θ(<i>t</i>), &nbsp;&nbsp; <i>θ̇</i> = <i>u</i>(<i>t</i>), &nbsp;&nbsp; |<i>u</i>|, |<i>v</i>| ≤ 1.</div><p>Check local controllability along (a) straight segments (<span class="m"><i>u</i> ≡ 0, <i>v</i> ≡ <i>v̄</i> ≠ 0</span>) and (b) circular arcs (<span class="m"><i>ū</i> ≠ 0, <i>v̄</i> ≠ 0</span>).</p>`,
+        a: `
+          <ul class="bullet-list">
+            <li><strong>(a) Straight segments</strong> (<span class="m">θ(<i>t</i>) = θ<sub>0</sub></span>, <span class="m">0 &lt; |<i>v̄</i>| &lt; 1</span> so controls can be perturbed):
+              <div class="math-block"><i>A</i> = [0, 0, −<i>v̄</i> sin θ<sub>0</sub>; &nbsp; 0, 0, <i>v̄</i> cos θ<sub>0</sub>; &nbsp; 0, 0, 0], &nbsp;&nbsp; <i>B</i> = [cos θ<sub>0</sub>, 0; &nbsp; sin θ<sub>0</sub>, 0; &nbsp; 0, 1].</div>
+              The columns <span class="m"><i>b</i><sub>1</sub>, <i>Ab</i><sub>2</sub>, <i>b</i><sub>2</sub></span> of <span class="m">[<i>B</i>, <i>AB</i>]</span> have determinant <span class="m"><i>v̄</i>(cos<sup>2</sup>θ<sub>0</sub> + sin<sup>2</sup>θ<sub>0</sub>) = <i>v̄</i> ≠ 0</span> ⇒ rank 3 ⇒ locally controllable along the segment.
+            </li>
+            <li><strong>(b) Circular arcs</strong> (<span class="m">θ(<i>t</i>) = θ<sub>0</sub> + <i>tū</i></span>): <span class="m"><i>A</i>(<i>t</i>)</span> and <span class="m"><i>B</i>(<i>t</i>)</span> are time-dependent, so use the non-autonomous differential rank test <span class="m"><i>B</i><sub>1</sub>(<i>t</i>) = <i>A</i>(<i>t</i>)<i>B</i>(<i>t</i>) − <i>Ḃ</i>(<i>t</i>)</span>:
+              <div class="math-block"><i>B</i><sub>1</sub>(<i>t</i>) = [<i>ū</i> sin θ(<i>t</i>), −<i>v̄</i> sin θ(<i>t</i>); &nbsp; −<i>ū</i> cos θ(<i>t</i>), <i>v̄</i> cos θ(<i>t</i>); &nbsp; 0, 0].</div>
+              Together with <span class="m"><i>B</i>(<i>t</i>)</span>, the first column of <span class="m"><i>B</i></span>, second column of <span class="m"><i>B</i></span>, and either column of <span class="m"><i>B</i><sub>1</sub></span> span <span class="m">ℝ<sup>3</sup></span> (since <span class="m">(cos θ, sin θ)</span> and <span class="m">(−sin θ, cos θ)</span> are orthogonal) ⇒ locally controllable along circular arcs!
+            </li>
+          </ul>
+        `
+      },
+      {
+        id: "pal1-3",
+        deck: "pal-hw1",
+        tag: "Palladino HW 1 · Ex. 1.6",
+        title: "Inverted Pendulum on a Cart: Linearization & Kalman Rank",
+        q: `<p>Consider the inverted pendulum on a cart with state <span class="m"><i>x</i> = (ξ, ξ̇, θ, θ̇)<sup><i>T</i></sup></span>:</p><div class="math-block">ξ̈ = ${fr("<i>m</i>ℓθ̇<sup>2</sup> sin θ − <i>mg</i> cos θ sin θ + <i>u</i>", "<i>M</i> + <i>m</i> sin<sup>2</sup>θ")}, &nbsp;&nbsp; θ̈ = ${fr("−<i>m</i>ℓθ̇<sup>2</sup> sin θ cos θ + (<i>M</i>+<i>m</i>)<i>g</i> sin θ − <i>u</i> cos θ", "ℓ(<i>M</i> + <i>m</i> sin<sup>2</sup>θ)")}.</div><p>Is the system locally controllable in time <span class="m"><i>T</i> &gt; 0</span> around the upright equilibrium <span class="m"><i>x̄</i> = (ξ̄, 0, 0, 0)<sup><i>T</i></sup></span>?</p>`,
+        a: `
+          <ul class="bullet-list">
+            <li>Linearizing <span class="m"><i>ẋ</i> = <i>f</i>(<i>x</i>, <i>u</i>)</span> at <span class="m"><i>x̄</i> = (ξ̄, 0, 0, 0)<sup><i>T</i></sup></span>, <span class="m"><i>ū</i> = 0</span> gives:
+              <div class="math-block"><i>A</i> = [0, 1, 0, 0; &nbsp; 0, 0, −${fr("<i>mg</i>", "<i>M</i>")}, 0; &nbsp; 0, 0, 0, 1; &nbsp; 0, 0, ${fr("(<i>M</i>+<i>m</i>)<i>g</i>", "ℓ<i>M</i>")}, 0], &nbsp;&nbsp; <i>B</i> = (0, ${fr("1", "<i>M</i>")}, 0, −${fr("1", "ℓ<i>M</i>")})<sup><i>T</i></sup>.</div>
+            </li>
+            <li>Compute the 4×4 Kalman matrix <span class="m"><i>K</i> = [<i>B</i>, <i>AB</i>, <i>A</i><sup>2</sup><i>B</i>, <i>A</i><sup>3</sup><i>B</i>]</span>:
+              <ul class="bullet-list">
+                <li><span class="m"><i>AB</i> = (1/<i>M</i>, 0, −1/(ℓ<i>M</i>), 0)<sup><i>T</i></sup></span></li>
+                <li><span class="m"><i>A</i><sup>2</sup><i>B</i> = (0, <i>mg</i>/(ℓ<i>M</i><sup>2</sup>), 0, −(<i>M</i>+<i>m</i>)<i>g</i>/(ℓ<sup>2</sup><i>M</i><sup>2</sup>))<sup><i>T</i></sup></span></li>
+                <li><span class="m"><i>A</i><sup>3</sup><i>B</i> = (<i>mg</i>/(ℓ<i>M</i><sup>2</sup>), 0, −(<i>M</i>+<i>m</i>)<i>g</i>/(ℓ<sup>2</sup><i>M</i><sup>2</sup>), 0)<sup><i>T</i></sup></span></li>
+              </ul>
+            </li>
+            <li>Swapping rows/columns into two 2×2 blocks yields <span class="m">det(<i>K</i>) = (${fr("<i>g</i>", "ℓ<sup>2</sup><i>M</i><sup>2</sup>")})<sup>2</sup> ≠ 0</span>, so <span class="m">rank(<i>K</i>) = 4</span>.</li>
+            <li><strong>Conclusion:</strong> By the linearization theorem, the inverted pendulum is <strong>locally controllable in any time <span class="m"><i>T</i> &gt; 0</span></strong> around the equilibrium.</li>
+          </ul>
+        `
+      },
+      {
+        id: "pal1-4",
+        deck: "pal-hw1",
+        tag: "Palladino HW 1 · Ex. 1.8",
+        title: "Fixed-Speed Steering (Dubins Car): Circular Linearization vs. STLC",
+        q: `<p>Consider the fixed-speed steering system:</p><div class="math-block"><i>ẋ</i><sub>1</sub> = cos θ, &nbsp;&nbsp; <i>ẋ</i><sub>2</sub> = sin θ, &nbsp;&nbsp; <i>θ̇</i> = <i>u</i>.</div><p>Linearize along the circular trajectory <span class="m">θ(<i>t</i>) = <i>t</i></span> (<span class="m"><i>u</i> ≡ 1</span>), test controllability of the linearization, and contrast local controllability along the trajectory with small-time local controllability (STLC).</p>`,
+        a: `
+          <ul class="bullet-list">
+            <li>Along <span class="m">θ(<i>t</i>) = <i>t</i></span>, <span class="m"><i>x</i><sub>1</sub>(<i>t</i>) = sin <i>t</i></span>, <span class="m"><i>x</i><sub>2</sub>(<i>t</i>) = 1 − cos <i>t</i></span>:
+              <div class="math-block"><i>A</i>(<i>t</i>) = [0, 0, −sin <i>t</i>; &nbsp; 0, 0, cos <i>t</i>; &nbsp; 0, 0, 0], &nbsp;&nbsp; <i>B</i><sub>0</sub> = (0, 0, 1)<sup><i>T</i></sup>.</div>
+            </li>
+            <li>Time-dependent rank sequence:
+              <div class="math-block"><i>B</i><sub>1</sub> = <i>A</i>(<i>t</i>)<i>B</i><sub>0</sub> − <i>Ḃ</i><sub>0</sub> = (−sin <i>t</i>, cos <i>t</i>, 0)<sup><i>T</i></sup>, &nbsp;&nbsp; <i>B</i><sub>2</sub> = <i>A</i>(<i>t</i>)<i>B</i><sub>1</sub> − <i>Ḃ</i><sub>1</sub> = (cos <i>t</i>, sin <i>t</i>, 0)<sup><i>T</i></sup>.</div>
+            </li>
+            <li><span class="m">det(<i>B</i><sub>1</sub>, <i>B</i><sub>2</sub>, <i>B</i><sub>0</sub>) = −(sin<sup>2</sup><i>t</i> + cos<sup>2</sup><i>t</i>) = −1 ≠ 0</span> for all <span class="m"><i>t</i></span> ⇒ the linearized system is controllable on any <span class="m">[0, <i>T</i>]</span>, giving local controllability around the <strong>moving endpoint</strong> <span class="m">(<i>x</i>(<i>T</i>), θ(<i>T</i>))</span>.</li>
+            <li><strong>Not STLC at (0, 0, 0):</strong> because forward speed is fixed at 1, <span class="m">(0, 0, 0)</span> is not an equilibrium and sideways targets with the same heading require a full loop rather than arbitrarily small time.</li>
+          </ul>
+        `
+      },
+
+      // ==================== PALLADINO HW 3 ====================
+      {
+        id: "pal3-1",
+        deck: "pal-hw3",
+        tag: "Palladino HW 3 · Ex. 1",
+        title: "Flat Coefficient ('Hairy Reachable Set') & Reaching (−1, 0)",
+        q: `<div class="math-block">${cases(["<i>ẋ</i><sub>1</sub> = <i>u</i><sub>1</sub>, &nbsp; <i>x</i><sub>1</sub>(0) = −1", "<i>ẋ</i><sub>2</sub> = <i>u</i><sub>2</sub> <i>f</i>(<i>x</i><sub>1</sub>), &nbsp; <i>x</i><sub>2</sub>(0) = 1"])} &nbsp;&nbsp; |<i>u</i><sub><i>i</i></sub>(<i>t</i>)| ≤ 1, &nbsp;&nbsp; <i>f</i>(<i>x</i>) = ${cases(["0, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>x</i> ≤ 0", "exp(−1/<i>x</i><sup>2</sup>), &nbsp; <i>x</i> &gt; 0"])}</div><p>(i) Describe the reachable set for different <span class="m"><i>T</i> &gt; 0</span>. (ii) Is it possible to reach <span class="m">(−1, 0)</span>? If yes, give an explicit bounded control.</p>`,
+        a: `
+          <ul class="bullet-list">
+            <li><strong>(i) Reachable set <span class="m">ℛ<sub>(−1,1)</sub>(<i>T</i>)</span>:</strong>
+              <ul class="bullet-list">
+                <li><strong>For <span class="m">0 &lt; <i>T</i> ≤ 1</span>:</strong> Since <span class="m">|<i>u</i><sub>1</sub>| ≤ 1</span>, <span class="m"><i>x</i><sub>1</sub>(<i>t</i>) ≤ −1 + <i>t</i> ≤ 0</span>, so <span class="m"><i>f</i>(<i>x</i><sub>1</sub>) ≡ 0</span> and <span class="m"><i>x</i><sub>2</sub>(<i>t</i>) ≡ 1</span>. The reachable set is just the horizontal segment <span class="m">[−1 − <i>T</i>, −1 + <i>T</i>] × {1}</span> (<strong>not STLC</strong> at <span class="m">(−1, 1)</span>).</li>
+                <li><strong>For <span class="m"><i>T</i> &gt; 1</span>:</strong> The trajectory can enter <span class="m"><i>x</i><sub>1</sub> &gt; 0</span> (where <span class="m"><i>f</i>(<i>x</i><sub>1</sub>) &gt; 0</span>), move vertically in <span class="m"><i>x</i><sub>2</sub></span>, and return left into <span class="m"><i>x</i><sub>1</sub> ≤ 0</span> ("hairy reachable set").</li>
+                <li><strong>Over all time:</strong> <span class="m">⋃<sub><i>T</i>&gt;0</sub> ℛ<sub>(−1,1)</sub>(<i>T</i>) = ℝ<sup>2</sup></span> (globally reachable).</li>
+              </ul>
+            </li>
+            <li><strong>(ii) Reaching (−1, 0) with |<i>u</i><sub><i>i</i></sub>| ≤ 1:</strong> Fix any <span class="m">ε &gt; 0</span> and let <span class="m">Δ<i>t</i> = 1/<i>f</i>(ε) = <i>e</i><sup>1/ε<sup>2</sup></sup></span>. Use 3 stages:
+              <ol class="proof-list">
+                <li><strong>Move right to <span class="m"><i>x</i><sub>1</sub> = ε</span></strong> on <span class="m">[0, 1 + ε)</span>: <span class="m"><i>u</i><sub>1</sub> = 1, <i>u</i><sub>2</sub> = 0</span>.</li>
+                <li><strong>Move down to <span class="m"><i>x</i><sub>2</sub> = 0</span></strong> on <span class="m">[1 + ε, 1 + ε + Δ<i>t</i>)</span>: <span class="m"><i>u</i><sub>1</sub> = 0, <i>u</i><sub>2</sub> = −1</span> (since <span class="m"><i>ẋ</i><sub>2</sub> = −<i>f</i>(ε)</span>).</li>
+                <li><strong>Return left to <span class="m"><i>x</i><sub>1</sub> = −1</span></strong> on <span class="m">[1 + ε + Δ<i>t</i>, 2 + 2ε + Δ<i>t</i>]</span>: <span class="m"><i>u</i><sub>1</sub> = −1, <i>u</i><sub>2</sub> = 0</span>.</li>
+              </ol>
+            </li>
+          </ul>
+        `
+      },
+      {
+        id: "pal3-2",
+        deck: "pal-hw3",
+        tag: "Palladino HW 3 · Ex. 2",
+        title: "Cubic Drift: Krener's Theorem & Direct STLC Computation",
+        q: `<div class="math-block">${cases(["<i>ẋ</i> = <i>y</i><sup>3</sup>, &nbsp; <i>x</i>(0) = 0", "<i>ẏ</i> = <i>u</i>, &nbsp;&nbsp; <i>y</i>(0) = 0"])} &nbsp;&nbsp; |<i>u</i>| ≤ 1</div><p>(i) Why do earlier controllability theorems fail? (ii) Show Krener's Theorem applies. (iii) Compute trajectories for <span class="m"><i>u</i><sub>1</sub> = +1</span> on <span class="m">[0, λ]</span>, <span class="m">−1</span> on <span class="m">[λ, η]</span> (and <span class="m"><i>u</i><sub>2</sub> = −<i>u</i><sub>1</sub></span>) to verify local controllability at <span class="m">(0, 0)</span>.</p>`,
+        a: `
+          <ul class="bullet-list">
+            <li><strong>(i) Earlier criteria fail:</strong>
+              <ul class="bullet-list">
+                <li>Linearization at <span class="m">(0,0,0)</span> has <span class="m"><i>A</i> = 0</span>, <span class="m"><i>B</i> = (0, 1)<sup><i>T</i></sup></span> ⇒ Kalman rank is <span class="m">1 &lt; 2</span>.</li>
+                <li>Not driftless (drift <span class="m"><i>f</i> = (<i>y</i><sup>3</sup>, 0)<sup><i>T</i></sup></span>), and drift is <strong>not recurrent</strong> (<span class="m"><i>y</i></span> constant, <span class="m"><i>ẋ</i> = <i>y</i><sup>3</sup></span> drifts away).</li>
+              </ul>
+            </li>
+            <li><strong>(ii) Krener's Theorem:</strong> <span class="m"><i>f</i>(<i>x</i>,<i>y</i>) = (<i>y</i><sup>3</sup>, 0)<sup><i>T</i></sup></span> and <span class="m"><i>g</i>(<i>x</i>,<i>y</i>) = (0, 1)<sup><i>T</i></sup></span> are analytic, <span class="m">0 ∈ int[−1, 1]</span>, and with <span class="m">[<i>f</i>, <i>g</i>] = <i>Dg</i>·<i>f</i> − <i>Df</i>·<i>g</i></span>:
+              <div class="math-block">[<i>f</i>, <i>g</i>] = (−3<i>y</i><sup>2</sup>, 0)<sup><i>T</i></sup>, &nbsp;&nbsp; [[<i>f</i>, <i>g</i>], <i>g</i>] = (6<i>y</i>, 0)<sup><i>T</i></sup>, &nbsp;&nbsp; [[[<i>f</i>, <i>g</i>], <i>g</i>], <i>g</i>] = (−6, 0)<sup><i>T</i></sup>.</div>
+              Together with <span class="m"><i>g</i>(0) = (0, 1)<sup><i>T</i></sup></span>, these span <span class="m">ℝ<sup>2</sup></span> (note the <em>odd</em> degree 3 allows both signs of <span class="m"><i>x</i></span>!).
+            </li>
+            <li><strong>(iii) Direct computation for <span class="m"><i>u</i><sub>1</sub></span> (<span class="m">0 &lt; λ &lt; η</span>):</strong>
+              <div class="math-block"><i>y</i>(<i>t</i>) = ${cases(["<i>t</i>, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>t</i> ∈ [0, λ]", "2λ − <i>t</i>, &nbsp;&nbsp;&nbsp;&nbsp; <i>t</i> ∈ [λ, η]"])} &nbsp;&nbsp; <i>x</i>(<i>t</i>) = ${cases(["<i>t</i><sup>4</sup>/4, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>t</i> ∈ [0, λ]", "λ<sup>4</sup>/2 − (2λ − <i>t</i>)<sup>4</sup>/4, &nbsp; <i>t</i> ∈ [λ, η]"])}</div>
+              For <span class="m"><i>u</i><sub>2</sub> = −<i>u</i><sub>1</sub></span>, by oddness both <span class="m"><i>x</i></span> and <span class="m"><i>y</i></span> flip sign: <span class="m">(−<i>x</i>(η), −<i>y</i>(η))</span>. Varying small <span class="m">(λ, η)</span> covers a full neighborhood of <span class="m">(0, 0)</span> in arbitrarily small time ⇒ <strong>STLC at the origin</strong>!
+            </li>
+          </ul>
+        `
+      },
+      {
+        id: "pal3-3",
+        deck: "pal-hw3",
+        tag: "Palladino HW 3 · Ex. 3",
+        title: "Nonlinear Control System (with u²): Local Controllability at Origin",
+        q: `<div class="math-block">${cases(["<i>ẋ</i><sub>1</sub> = <i>x</i><sub>1</sub> + <i>x</i><sub>2</sub><sup>2</sup> + <i>u</i>", "<i>ẋ</i><sub>2</sub> = sin <i>x</i><sub>3</sub> + <i>u</i><sup>2</sup>", "<i>ẋ</i><sub>3</sub> = <i>x</i><sub>1</sub> + sin <i>x</i><sub>2</sub> + cos <i>x</i><sub>3</sub> − 1"])} &nbsp;&nbsp; <i>x</i>(0) = (0, 0, 0), &nbsp; |<i>u</i>| ≤ 1</div><p>Prove that the system is locally controllable at the origin.</p>`,
+        a: `
+          <ul class="bullet-list">
+            <li>Note <span class="m"><i>F</i>(0, 0) = (0, 0, 0)<sup><i>T</i></sup></span>, so <span class="m">(0, 0)</span> is an equilibrium. It is <em>not</em> control-affine (due to <span class="m"><i>u</i><sup>2</sup></span>), so use <strong>linearization at the equilibrium</strong>.</li>
+            <li>Compute the Jacobians at <span class="m">(<i>x</i>, <i>u</i>) = (0, 0)</span>:
+              <div class="math-block"><i>A</i> = <i>D</i><sub><i>x</i></sub><i>F</i>(0, 0) = [1, 0, 0; &nbsp; 0, 0, 1; &nbsp; 1, 1, 0], &nbsp;&nbsp; <i>B</i> = <i>D</i><sub><i>u</i></sub><i>F</i>(0, 0) = (1, 0, 0)<sup><i>T</i></sup>.</div>
+            </li>
+            <li>Kalman controllability matrix:
+              <div class="math-block"><i>C</i>(<i>A</i>, <i>B</i>) = [<i>B</i>, <i>AB</i>, <i>A</i><sup>2</sup><i>B</i>] = [1, 1, 1; &nbsp; 0, 0, 1; &nbsp; 0, 1, 1], &nbsp;&nbsp; det <i>C</i> = −1 ≠ 0.</div>
+            </li>
+            <li>Since <span class="m">rank <i>C</i>(<i>A</i>, <i>B</i>) = 3</span> and <span class="m">0 ∈ int[−1, 1]</span>, the system is <strong>locally controllable at the origin</strong> (STLC). ∎</li>
+          </ul>
+        `
+      },
+      {
+        id: "pal3-4",
+        deck: "pal-hw3",
+        tag: "Palladino · Midterm 1 (2025) Q1",
+        title: "Recurrent Drift + Lie Brackets: Global Reachability in ℝ²",
+        q: `<div class="math-block">${cases(["<i>ẋ</i><sub>1</sub> = −(1 − <i>u</i>)<i>x</i><sub>2</sub> + <i>u</i>, &nbsp; <i>x</i><sub>1</sub>(0) = 1", "<i>ẋ</i><sub>2</sub> = (1 − <i>u</i>)<i>x</i><sub>1</sub>, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>x</i><sub>2</sub>(0) = 0"])} &nbsp;&nbsp; <i>u</i> ∈ [−1, 1]</div><p>Show that <span class="m">⋃<sub><i>T</i>&gt;0</sub> ℛ<sub><i>x</i><sub>0</sub></sub>(<i>T</i>) = ℝ<sup>2</sup></span>.</p>`,
+        a: `
+          <ul class="bullet-list">
+            <li>Write in control-affine form <span class="m"><i>ẋ</i> = <i>f</i>(<i>x</i>) + <i>g</i>(<i>x</i>)<i>u</i></span>:
+              <div class="math-block"><i>f</i>(<i>x</i>) = (−<i>x</i><sub>2</sub>, <i>x</i><sub>1</sub>)<sup><i>T</i></sup>, &nbsp;&nbsp; <i>g</i>(<i>x</i>) = (<i>x</i><sub>2</sub> + 1, −<i>x</i><sub>1</sub>)<sup><i>T</i></sup>.</div>
+            </li>
+            <li><strong>Recurrent drift:</strong> For <span class="m"><i>u</i> = 0</span>, <span class="m"><i>ẋ</i> = <i>f</i>(<i>x</i>)</span> generates periodic circular rotations around the origin, so <span class="m"><i>f</i></span> is weakly recurrent (in fact periodic).</li>
+            <li><strong>Lie algebra rank condition everywhere in <span class="m">ℝ<sup>2</sup></span>:</strong>
+              <div class="math-block">[<i>f</i>, <i>g</i>] = <i>Dg</i>·<i>f</i> − <i>Df</i>·<i>g</i> = (0, −1)<sup><i>T</i></sup>, &nbsp;&nbsp; [<i>f</i>, [<i>f</i>, <i>g</i>]] = −<i>Df</i>·(0, −1)<sup><i>T</i></sup> = (−1, 0)<sup><i>T</i></sup>.</div>
+            </li>
+            <li>The two constant vectors <span class="m">(0, −1)<sup><i>T</i></sup></span> and <span class="m">(−1, 0)<sup><i>T</i></sup></span> span <span class="m">ℝ<sup>2</sup></span> at <strong>every</strong> point <span class="m"><i>x</i> ∈ ℝ<sup>2</sup></span> (including <span class="m">(0, −1)</span> where <span class="m"><i>g</i> = 0</span>).</li>
+            <li>By the global controllability theorem for control-affine systems with weakly recurrent drift, <span class="m">⋃<sub><i>T</i>&gt;0</sub> ℛ<sub><i>x</i><sub>0</sub></sub>(<i>T</i>) = ℝ<sup>2</sup></span>. ∎</li>
+          </ul>
+        `
       }
     ];
 
@@ -887,7 +1063,15 @@
       "hw3-4": "HW: 2026-11-06 · Notes: 2026-10-22 & 10-29",
       "hw4-1": "HW: 2026-11-14 · Notes: 2026-10-29",
       "hw4-2": "HW: 2026-11-14 · Notes: 2026-11-05",
-      "hw4-3": "HW: 2026-11-14 · Notes: 2026-10-22 & 10-29"
+      "hw4-3": "HW: 2026-11-14 · Notes: 2026-10-22 & 10-29",
+      "pal1-1": "Palladino HW 1 · Notes: 2026-09-28",
+      "pal1-2": "Palladino HW 1 (Ex 1.4) · Notes: 2026-10-26",
+      "pal1-3": "Palladino HW 1 (Ex 1.6) · Notes: 2026-10-05",
+      "pal1-4": "Palladino HW 1 (Ex 1.8) · Notes: 2026-11-02",
+      "pal3-1": "Palladino HW 3 (Ex 1) · Notes: 2026-11-09",
+      "pal3-2": "Palladino HW 3 (Ex 2) · Notes: 2026-11-09",
+      "pal3-3": "Palladino HW 3 (Ex 3) · Notes: 2026-11-09",
+      "pal3-4": "Midterm 1 (2025) Q1 · Notes: 2026-11-09"
     };
 
     // State
@@ -937,7 +1121,6 @@
           currentIndex = 0;
           answerOpen = false;
       
-    // Theme init (system preference + saved override)
     const THEME_KEY = "mct_pignotti_theme_v1";
     const applyTheme = (t) => {
       document.documentElement.classList.toggle("dark", t === "dark");
@@ -1059,7 +1242,6 @@
           currentIndex = idx;
           answerOpen = false;
       
-    // Theme init (system preference + saved override)
     const THEME_KEY = "mct_pignotti_theme_v1";
     const applyTheme = (t) => {
       document.documentElement.classList.toggle("dark", t === "dark");
@@ -1143,7 +1325,6 @@
       currentIndex = 0;
       answerOpen = false;
   
-    // Theme init (system preference + saved override)
     const THEME_KEY = "mct_pignotti_theme_v1";
     const applyTheme = (t) => {
       document.documentElement.classList.toggle("dark", t === "dark");
@@ -1167,7 +1348,6 @@
       currentIndex = 0;
       answerOpen = false;
   
-    // Theme init (system preference + saved override)
     const THEME_KEY = "mct_pignotti_theme_v1";
     const applyTheme = (t) => {
       document.documentElement.classList.toggle("dark", t === "dark");
@@ -1192,7 +1372,6 @@
     document.getElementById("toggleAnswerBtn").onclick = () => {
       answerOpen = !answerOpen;
   
-    // Theme init (system preference + saved override)
     const THEME_KEY = "mct_pignotti_theme_v1";
     const applyTheme = (t) => {
       document.documentElement.classList.toggle("dark", t === "dark");
@@ -1228,7 +1407,6 @@
       if (currentIndex < cards.length - 1 && !missedOnly) { currentIndex++; answerOpen = false; }
       else if (missedOnly) { answerOpen = false; }
   
-    // Theme init (system preference + saved override)
     const THEME_KEY = "mct_pignotti_theme_v1";
     const applyTheme = (t) => {
       document.documentElement.classList.toggle("dark", t === "dark");
@@ -1255,7 +1433,6 @@
       saveProgress();
       if (currentIndex < cards.length - 1) { currentIndex++; answerOpen = false; }
   
-    // Theme init (system preference + saved override)
     const THEME_KEY = "mct_pignotti_theme_v1";
     const applyTheme = (t) => {
       document.documentElement.classList.toggle("dark", t === "dark");
@@ -1283,7 +1460,6 @@
       currentIndex = 0;
       answerOpen = false;
   
-    // Theme init (system preference + saved override)
     const THEME_KEY = "mct_pignotti_theme_v1";
     const applyTheme = (t) => {
       document.documentElement.classList.toggle("dark", t === "dark");
@@ -1308,7 +1484,6 @@
       currentIndex = 0;
       answerOpen = false;
   
-    // Theme init (system preference + saved override)
     const THEME_KEY = "mct_pignotti_theme_v1";
     const applyTheme = (t) => {
       document.documentElement.classList.toggle("dark", t === "dark");
@@ -1333,7 +1508,6 @@
       saveProgress();
       missedOnly = false;
   
-    // Theme init (system preference + saved override)
     const THEME_KEY = "mct_pignotti_theme_v1";
     const applyTheme = (t) => {
       document.documentElement.classList.toggle("dark", t === "dark");
@@ -1359,7 +1533,6 @@
         e.preventDefault();
         answerOpen = !answerOpen;
     
-    // Theme init (system preference + saved override)
     const THEME_KEY = "mct_pignotti_theme_v1";
     const applyTheme = (t) => {
       document.documentElement.classList.toggle("dark", t === "dark");
@@ -1386,7 +1559,6 @@
     });
 
 
-    // Theme init (system preference + saved override)
     const THEME_KEY = "mct_pignotti_theme_v1";
     const applyTheme = (t) => {
       document.documentElement.classList.toggle("dark", t === "dark");
